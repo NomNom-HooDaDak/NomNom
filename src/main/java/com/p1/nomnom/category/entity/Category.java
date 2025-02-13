@@ -1,16 +1,19 @@
 package com.p1.nomnom.category.entity;
 
 import jakarta.persistence.*;
+import java.util.UUID;
 
 @Entity
-@Table(name = "p_category")
+@Table(name = "p_category", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "name")
+})
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
-    @Column(name = "name", nullable = false, length = 255)
+    @Column(name = "name", nullable = false, unique = true, length = 255)
     private String name;
 
     @Column(name = "description", length = 255)
@@ -20,11 +23,11 @@ public class Category {
     private Boolean hidden = false;
 
     // Getters and Setters
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
