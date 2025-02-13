@@ -1,17 +1,18 @@
 package com.p1.nomnom.store.entity;
 
 import jakarta.persistence.*;
+import java.util.UUID;
 
 @Entity
-@Table(name = "p_stores")
+@Table(name = "p_store")
 public class Store {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
     @Column(name = "category_id", nullable = false)
-    private Long categoryId;
+    private UUID categoryId;
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
@@ -31,20 +32,23 @@ public class Store {
     @Column(name = "close_time", nullable = false, length = 255)
     private String closeTime;
 
+    @Column(name = "hidden", nullable = false)
+    private Boolean hidden = false;
+
     // Getters and Setters
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
-    public Long getCategoryId() {
+    public UUID getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(Long categoryId) {
+    public void setCategoryId(UUID categoryId) {
         this.categoryId = categoryId;
     }
 
@@ -94,5 +98,13 @@ public class Store {
 
     public void setCloseTime(String closeTime) {
         this.closeTime = closeTime;
+    }
+
+    public Boolean getHidden() {
+        return hidden;
+    }
+
+    public void setHidden(Boolean hidden) {
+        this.hidden = hidden;
     }
 }
