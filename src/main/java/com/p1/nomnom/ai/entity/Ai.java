@@ -1,36 +1,40 @@
 package com.p1.nomnom.ai.entity;
 
 import jakarta.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "p_ai")
 public class Ai {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
-    @Column(name = "question", nullable = false)
+    @Column(name = "question", nullable = false, length = 255)
     private String question;
 
-    @Column(name = "answer", nullable = false)
+    @Column(name = "answer", nullable = false, length = 255)
     private String answer;
 
-    @Column(name = "store_id", nullable = false)
-    private Long storeId;
+    @Column(name = "food_name", nullable = false, length = 255)
+    private String foodName;
 
-    @Column(name = "description_hint")
+    @Column(name = "store_id", nullable = false)
+    private UUID storeId;
+
+    @Column(name = "description_hint", length = 255)
     private String descriptionHint;
 
-    @Column(name = "keyword")
+    @Column(name = "keyword", length = 255)
     private String keyword;
 
     // Getters and Setters
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -50,11 +54,19 @@ public class Ai {
         this.answer = answer;
     }
 
-    public Long getStoreId() {
+    public String getFoodName() {
+        return foodName;
+    }
+
+    public void setFoodName(String foodName) {
+        this.foodName = foodName;
+    }
+
+    public UUID getStoreId() {
         return storeId;
     }
 
-    public void setStoreId(Long storeId) {
+    public void setStoreId(UUID storeId) {
         this.storeId = storeId;
     }
 
