@@ -28,8 +28,8 @@ public class ReviewResponseDto {
         return new ReviewResponseDto(
                 review.getId(),
                 review.getOrderId(),
-                "", // TODO: order에서 store 정보 가져오기
-                "", // TODO: order에서 user 정보 가져오기
+                "",
+                "",
                 review.getScore(),
                 review.getContent(),
                 review.getReviewImages().stream()

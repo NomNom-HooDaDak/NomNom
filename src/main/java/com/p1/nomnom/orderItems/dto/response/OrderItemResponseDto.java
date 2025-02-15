@@ -22,7 +22,7 @@ public class OrderItemResponseDto {
         return new OrderItemResponseDto(
                 orderItem.getId(),
                 orderItem.getFoodId(),
-                "", // TODO: foodId를 기반으로 foodName 조회 필요
+                "",
                 orderItem.getQuantity(),
                 orderItem.getPrice()
         );

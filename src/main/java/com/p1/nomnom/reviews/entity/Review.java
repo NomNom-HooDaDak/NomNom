@@ -27,10 +27,6 @@ public class Review extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "user_name", nullable = false)
-    @NotNull
-    private String userName;
-
     @Column(nullable = false)
     private int score;
 

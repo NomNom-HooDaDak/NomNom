@@ -31,9 +31,9 @@ public class OrderResponseDto {
     public static OrderResponseDto from(Order order) {
         return new OrderResponseDto(
                 order.getId(),
-                "", // TODO: order에서 user 정보 가져오기
-                "", // TODO: order에서 store 정보 가져오기
-                "", // TODO: order에서 address 정보 가져오기
+                order.getUser().getUsername(),
+                "",
+                "",
                 order.getPhone(),
                 order.getTotalPrice(),
                 order.getStatus().name(),

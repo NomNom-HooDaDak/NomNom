@@ -1,6 +1,7 @@
 package com.p1.nomnom.orders.dto.response;
 
 import com.p1.nomnom.orderItems.dto.response.OrderItemResponseDto;
+import com.p1.nomnom.orders.entity.Order;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
@@ -19,4 +21,17 @@ public class OrderListResponseDto {
     private String status;
     private LocalDateTime createdAt;
     private List<OrderItemResponseDto> orderItems;
+
+    public static OrderListResponseDto from(Order order) {
+        return new OrderListResponseDto(
+                order.getId(),
+                "",
+                order.getTotalPrice(),
+                order.getStatus().name(),
+                order.getCreatedAt(),
+                order.getOrderItems().stream()
+                        .map(OrderItemResponseDto::from)
+                        .collect(Collectors.toList())
+        );
+    }
 }
