@@ -1,12 +1,13 @@
 package com.p1.nomnom.reviewImages.entity;
 
-import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.p1.nomnom.common.entity.BaseEntity;
-import com.p1.nomnom.orders.entity.Order;
 import com.p1.nomnom.reviews.entity.Review;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
+
+import java.util.UUID;
+
 @Entity
 @Table(name = "p_reviews")
 @Getter
@@ -14,8 +15,10 @@ import lombok.*;
 @AllArgsConstructor
 public class ReviewImage extends BaseEntity {
     @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "review_image_id")
-    private String id = NanoIdUtils.randomNanoId();
+    private UUID id;
 
     @Column(nullable = false)
     private String url;

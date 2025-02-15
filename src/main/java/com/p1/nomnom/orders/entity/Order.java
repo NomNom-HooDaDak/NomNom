@@ -1,15 +1,14 @@
 package com.p1.nomnom.orders.entity;
 
-import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.p1.nomnom.common.entity.BaseEntity;
 import com.p1.nomnom.orderItems.entity.OrderItem;
-import com.p1.nomnom.reviews.entity.Review;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -18,8 +17,10 @@ import java.util.List;
 @AllArgsConstructor
 public class Order extends BaseEntity {
     @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "order_id")
-    private String id = NanoIdUtils.randomNanoId();;
+    private UUID id;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -38,7 +39,7 @@ public class Order extends BaseEntity {
 //    private String phone;
 
     @Column(name = "address_id", nullable = false)
-    private String addressId;
+    private UUID addressId;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(nullable = false)
@@ -51,7 +52,7 @@ public class Order extends BaseEntity {
     private String method;
 
     @Column(name = "review_id")
-    private String reviewId;
+    private UUID reviewId;
 
     //유저 엔티티 추가되면 해제
 //    public void setUser(User user) {

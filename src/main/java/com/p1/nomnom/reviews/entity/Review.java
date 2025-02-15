@@ -1,16 +1,15 @@
 package com.p1.nomnom.reviews.entity;
 
-import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.p1.nomnom.common.entity.BaseEntity;
-import com.p1.nomnom.orderItems.entity.OrderItem;
-import com.p1.nomnom.orders.entity.Order;
 import com.p1.nomnom.reviewImages.entity.ReviewImage;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "p_reviews")
@@ -20,8 +19,10 @@ import java.util.List;
 @Builder
 public class Review extends BaseEntity {
     @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "review_id")
-    private String id = NanoIdUtils.randomNanoId();
+    private UUID id;
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
@@ -41,5 +42,5 @@ public class Review extends BaseEntity {
     private List<ReviewImage> reviewImages = new ArrayList<>();
 
     @Column(name = "order_id", nullable = false)
-    private String orderId;
+    private UUID orderId;
 }
