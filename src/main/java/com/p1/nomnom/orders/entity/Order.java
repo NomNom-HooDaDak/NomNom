@@ -22,54 +22,43 @@ public class Order extends BaseEntity {
     private String id = NanoIdUtils.randomNanoId();;
 
     @Enumerated(EnumType.STRING)
-    @NotNull
+    @Column(nullable = false)
     private Status status;
 
     @Column(columnDefinition = "TEXT")
     private String request;
 
-    // 생명주기 생성과 삭제에 밀접한관련이 있나
-    // 오더아이템 주문한 목록 / 오더는 주문
-    // 오더아이템이 삭제될 경우 주문도 영향이간다
-    // 주문 삭제될 경우 오더아이템은 없어야한다 pk fk 참조하는관계 즉 조인가능하다
-    // 유저같은경우
-    // 주문이 삭제된다고해서 유저가 삭제가 되나요?
-
+//    유저 엔티티 생성되면 해제 예정
 //    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id")
-//    private User user; -> N+1쿼리 문제
+//    @JoinColumn(name = "user_id", nullable = false)
+//    private User user;
 
-    @Column(name = "user_id")
-    @NotNull
-    private Long userId;
+//    // 나중을 위한 스냅샷 (아직 미사용)
+//    @Column(nullable = false)
+//    private String phone;
 
-    @Column(name = "user_name")
-    @NotNull
-    private String userName;
-
-    @NotNull
-    private String phone;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "address_id")
-//    private Address address;
-
-    @Column(name = "address_id")
-    @NotNull
+    @Column(name = "address_id", nullable = false)
     private String addressId;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    @NotNull
+    @Column(nullable = false)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @Column(name = "total_price")
-    @NotNull
+    @Column(name = "total_price", nullable = false)
     private int totalPrice;
 
-    @NotNull
+    @Column(nullable = false)
     private String method;
 
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Review review;
+    @Column(name = "review_id")
+    private String reviewId;
+
+    //유저 엔티티 추가되면 해제
+//    public void setUser(User user) {
+//        this.user = user;
+//        if (!user.getOrders().contains(this)) {
+//            user.getOrders().add(this);
+//        }
+//    }
 }
 
