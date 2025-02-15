@@ -3,6 +3,7 @@ package com.p1.nomnom.orders.entity;
 import com.p1.nomnom.common.entity.BaseEntity;
 import com.p1.nomnom.orderItems.entity.OrderItem;
 import com.p1.nomnom.payment.entity.Payment;
+import com.p1.nomnom.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -26,10 +27,9 @@ public class Order extends BaseEntity {
     @Column(name = "store_id", nullable = false)
     private UUID storeId;
 
-//    유저 엔티티 생성되면 해제 예정
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(nullable = false)
     private String phone;
@@ -57,12 +57,11 @@ public class Order extends BaseEntity {
     @Column(name = "review_id")
     private UUID reviewId;
 
-    //유저 엔티티 추가되면 해제
-//    public void setUser(User user) {
-//        this.user = user;
-//        if (!user.getOrders().contains(this)) {
-//            user.getOrders().add(this);
-//        }
-//    }
+    public void setUser(User user) {
+        this.user = user;
+        if (!user.getOrders().contains(this)) {
+            user.getOrders().add(this);
+        }
+    }
 }
 
