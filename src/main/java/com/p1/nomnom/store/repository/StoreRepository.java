@@ -3,6 +3,7 @@ package com.p1.nomnom.store.repository;
 import com.p1.nomnom.store.entity.Store;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -20,4 +21,11 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortBy).descending()); // 생성일/수정일 기준 내림차순 정렬
         return findAllByCategoryId(categoryId, pageRequest);
     }
+
+    // 이름을 포함한 검색 (카테고리와 함께)
+    Page<Store> findByNameContainingAndCategoryId(String name, UUID categoryId, Pageable pageable);
+
+    // 카테고리별로 모든 가게 조회
+    Page<Store> findAllByCategoryId(UUID categoryId, Pageable pageable);
+
 }

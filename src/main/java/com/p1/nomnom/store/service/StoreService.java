@@ -2,35 +2,34 @@ package com.p1.nomnom.store.service;
 
 import com.p1.nomnom.store.dto.request.StoreRequestDTO;
 import com.p1.nomnom.store.dto.response.StoreResponseDTO;
-import com.p1.nomnom.store.entity.Store;
-import com.p1.nomnom.store.repository.StoreRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-@Service
-@RequiredArgsConstructor
-public class StoreService {
-
-    private final StoreRepository storeRepository;
-
+public interface StoreService {
     // 검색, 페이지네이션 및 정렬 기능 구현
-    @Transactional
-    public List<StoreResponseDTO> searchStores(UUID categoryId, int page, int size, String sortBy) {
-        // 기본적으로 페이지 크기를 10으로 설정
-        if (size != 10 && size != 30 && size != 50) {
-            size = 10; // 10건씩 기본 설정
-        }
+    List<StoreResponseDTO> searchStores(UUID categoryId, String name, int pageSize, Sort sort);
 
-        Page<Store> storesPage = storeRepository.searchStores(categoryId, page, size, sortBy);
-        return storesPage.stream()
-                .map(store -> new StoreResponseDTO(store.getId(), store.getName(), store.getAddress(),
-                        store.getPhone(), store.getOpenTime(), store.getCloseTime(), store.getCategory().getId(), store.getCreatedAt()))
-                .collect(Collectors.toList());
-    }
+    // 가게 등록
+    StoreResponseDTO createStore(StoreRequestDTO storeRequestDTO);
+
+    // 가게 정보 수정
+    StoreResponseDTO updateStore(UUID storeId, StoreRequestDTO storeRequestDTO);
+
+    // 특정 가게 조회
+    StoreResponseDTO getStore(UUID storeId);
+
+    // 카테고리별 가게 조회
+    List<StoreResponseDTO> getStoresByCategory(UUID categoryId, int page, int size);
+
+    // 모든 가게 조회
+    List<StoreResponseDTO> getAllStores(int page, int size);
+
+    // 가게 숨김 처리
+    StoreResponseDTO hideStore(UUID storeId);
+
+    // 가게 복구 처리
+    StoreResponseDTO restoreStore(UUID storeId);
 }
+

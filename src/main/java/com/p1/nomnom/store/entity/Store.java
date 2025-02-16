@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -50,6 +51,7 @@ public class Store extends BaseEntity {
     // 가게 숨김 처리 (삭제 처리)
     public void hide(String deletedBy) {
         this.hidden = true;  // hidden을 true로 설정하여 숨김 처리
+        this.deletedAt = LocalDateTime.now();  // 삭제일 설정
         this.markAsDeleted(deletedBy); // 삭제일 및 삭제자 설정
     }
 

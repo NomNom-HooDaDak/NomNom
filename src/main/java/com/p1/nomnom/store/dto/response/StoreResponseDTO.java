@@ -18,9 +18,10 @@ public class StoreResponseDTO {
     private String closeTime;
     private UUID categoryId;
     private LocalDateTime createdAt;
+    private boolean hidden;  // 숨김 처리 여부
+    private LocalDateTime deletedAt; // 삭제 시간
 
-    // Store 엔티티로부터 생성된 DTO
-    public StoreResponseDTO(UUID id, String name, String address, String phone, String openTime, String closeTime, UUID categoryId, LocalDateTime createdAt) {
+    public StoreResponseDTO(UUID id, String name, String address, String phone, String openTime, String closeTime, UUID categoryId, LocalDateTime createdAt, boolean hidden, LocalDateTime deletedAt) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -29,5 +30,7 @@ public class StoreResponseDTO {
         this.closeTime = closeTime;
         this.categoryId = categoryId;
         this.createdAt = createdAt;
+        this.hidden = hidden;
+        this.deletedAt = deletedAt;
     }
 }
