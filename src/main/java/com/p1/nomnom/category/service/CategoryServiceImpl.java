@@ -5,6 +5,10 @@ import com.p1.nomnom.category.dto.response.CategoryResponseDTO;
 import com.p1.nomnom.category.entity.Category;
 import com.p1.nomnom.category.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -89,4 +93,22 @@ public class CategoryServiceImpl implements CategoryService {
         responseDTO.setDeletedBy(category.getDeletedBy());
         return responseDTO;
     }
+
+    @Override
+    public List<CategoryResponseDTO> searchCategories(String name, int pageSize, Sort sort) {
+        Pageable pageable = PageRequest.of(0, pageSize, sort);  // 첫 페이지, 지정된 페이지 사이즈, 정렬
+        Page<Category> pageResult;
+
+        if (name != null && !name.isEmpty()) {
+            pageResult = categoryRepository.findByNameContaining(name, pageable);
+        } else {
+            pageResult = categoryRepository.findAll(pageable);
+        }
+
+        return pageResult.stream()
+                .map(this::mapToResponseDTO)  // 엔티티를 DTO로 변환
+                .collect(Collectors.toList());
+    }
+
+
 }

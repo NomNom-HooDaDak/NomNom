@@ -2,6 +2,7 @@ package com.p1.nomnom.category.service;
 
 import com.p1.nomnom.category.dto.request.CategoryRequestDTO;
 import com.p1.nomnom.category.dto.response.CategoryResponseDTO;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,4 +21,6 @@ public interface CategoryService {
 
     // ID로 카테고리 수정
     CategoryResponseDTO updateCategoryById(UUID categoryId, CategoryRequestDTO categoryRequestDTO);
+
+    List<CategoryResponseDTO> searchCategories(String name, int pageSize, Sort sort);
 }
