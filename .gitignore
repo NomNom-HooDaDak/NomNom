@@ -40,6 +40,10 @@ out/
 src/main/resources/application.properties
 src/main/resources/application.yml
 
+# Ensure resources folder is tracked
+!src/main/resources/
+!src/main/resources/.keep
+
 # MacOS
 .DS_Store
 
