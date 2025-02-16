@@ -4,6 +4,7 @@ import com.p1.nomnom.security.jwt.JwtUtil;
 import com.p1.nomnom.security.jwt.JwtAuthenticationFilter;
 import com.p1.nomnom.security.jwt.JwtAuthorizationFilter;
 import com.p1.nomnom.security.userdetails.UserDetailsServiceImpl;
+import com.p1.nomnom.user.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,7 @@ public class WebSecurityConfig {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     // 비밀번호 암호화 설정
     @Bean
@@ -42,7 +44,7 @@ public class WebSecurityConfig {
     // 로그인 요청 시 인증 필터
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, refreshTokenRepository);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
@@ -50,7 +52,7 @@ public class WebSecurityConfig {
     // JWT 토큰 검증 필터
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
+        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, refreshTokenRepository);
     }
 
     // Spring Security 설정

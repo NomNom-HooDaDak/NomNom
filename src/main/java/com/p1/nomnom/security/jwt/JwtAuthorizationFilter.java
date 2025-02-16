@@ -1,8 +1,9 @@
 package com.p1.nomnom.security.jwt;
 
 import com.p1.nomnom.security.userdetails.UserDetailsServiceImpl;
+import com.p1.nomnom.user.entity.RefreshToken;
 import com.p1.nomnom.user.entity.User;
-import com.p1.nomnom.user.repository.UserRepository;
+import com.p1.nomnom.user.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,12 +26,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
-    private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService, UserRepository userRepository) {
+    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService, RefreshTokenRepository refreshTokenRepository) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
-        this.userRepository = userRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     @Override
@@ -44,13 +45,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 setAuthentication(info.getSubject());
             } else if (StringUtils.hasText(refreshToken) && jwtUtil.validateToken(refreshToken)) {
                 // AccessToken이 만료되고 RefreshToken이 유효하면 새로운 AccessToken 발급
-                Optional<User> userOptional = userRepository.findByRefreshToken(refreshToken);
-                if (userOptional.isPresent()) {
-                    User user = userOptional.get();
-                    String newAccessToken = jwtUtil.createAccessToken(user.getUsername(), user.getRole());
+                Optional<RefreshToken> storedToken = refreshTokenRepository.findByRefreshToken(refreshToken);
+                if (storedToken.isPresent()) {
+                    String newAccessToken = jwtUtil.refreshAccessToken(refreshToken);
                     res.addHeader(JwtUtil.AUTHORIZATION_HEADER, newAccessToken);
 
-                    setAuthentication(user.getUsername());
+                    setAuthentication(storedToken.get().getUsername());
                 } else {
                     log.error("유효하지 않은 Refresh Token입니다.");
                 }
@@ -58,7 +58,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 log.error("토큰이 유효하지 않습니다.");
             }
         }
-
         filterChain.doFilter(req, res);
     }
 

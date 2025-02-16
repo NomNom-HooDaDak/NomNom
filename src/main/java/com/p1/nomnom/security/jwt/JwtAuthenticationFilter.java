@@ -2,9 +2,10 @@ package com.p1.nomnom.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.p1.nomnom.security.userdetails.UserDetailsImpl;
-import com.p1.nomnom.user.entity.User;
+import com.p1.nomnom.user.dto.LoginRequestDto;
+import com.p1.nomnom.user.entity.RefreshToken;
 import com.p1.nomnom.user.entity.UserRoleEnum;
-import com.p1.nomnom.user.repository.UserRepository;
+import com.p1.nomnom.user.repository.RefreshTokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,11 +21,11 @@ import java.util.Optional;
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserRepository userRepository) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, RefreshTokenRepository refreshTokenRepository) {
         this.jwtUtil = jwtUtil;
-        this.userRepository = userRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
         setFilterProcessesUrl("/api/user/login"); // 로그인 요청 URL
     }
 
@@ -53,19 +54,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // AccessToken & RefreshToken 생성
         String accessToken = jwtUtil.createAccessToken(username, role);
-        String refreshToken = jwtUtil.createRefreshToken();
+        RefreshToken refreshToken = jwtUtil.createRefreshToken(username);
 
         // RefreshToken을 DB에 저장 (기존 RefreshToken이 있다면 업데이트)
-        Optional<User> userOptional = userRepository.findByUsername(username);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            user.setRefreshToken(refreshToken);
-            userRepository.save(user);
-        }
+        refreshTokenRepository.save(refreshToken);
 
         // 응답 헤더에 토큰 추가
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
-        response.addHeader(JwtUtil.REFRESH_HEADER, refreshToken);
+        response.addHeader(JwtUtil.REFRESH_TOKEN_HEADER, refreshToken.getRefreshToken());
     }
 
     @Override

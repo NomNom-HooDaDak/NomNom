@@ -31,10 +31,6 @@ public class UserDetailsImpl implements UserDetails {
         return user.getUsername();
     }
 
-    public String getRefreshToken() {
-        return user.getRefreshToken();  // RefreshToken 조회 가능하도록 추가
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         UserRoleEnum role = user.getRole();
