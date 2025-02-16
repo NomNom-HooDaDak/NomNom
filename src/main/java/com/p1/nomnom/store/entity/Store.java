@@ -1,21 +1,33 @@
 package com.p1.nomnom.store.entity;
 
+import com.p1.nomnom.category.entity.Category;
+import com.p1.nomnom.common.entity.BaseEntity;
+import com.p1.nomnom.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.UUID;
 
 @Entity
 @Table(name = "p_store")
-public class Store {
+@Getter
+@Setter
+public class Store extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(name = "category_id", nullable = false)
-    private UUID categoryId;
+    // Many-to-One 관계로 User와 연결
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    // Many-to-One 관계로 User와 연결
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name = "name", nullable = false, length = 255)
     private String name;
@@ -35,76 +47,15 @@ public class Store {
     @Column(name = "hidden", nullable = false)
     private Boolean hidden = false;
 
-    // Getters and Setters
-    public UUID getId() {
-        return id;
+    // 가게 숨김 처리 (삭제 처리)
+    public void hide(String deletedBy) {
+        this.hidden = true;  // hidden을 true로 설정하여 숨김 처리
+        this.markAsDeleted(deletedBy); // 삭제일 및 삭제자 설정
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public UUID getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(UUID categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getOpenTime() {
-        return openTime;
-    }
-
-    public void setOpenTime(String openTime) {
-        this.openTime = openTime;
-    }
-
-    public String getCloseTime() {
-        return closeTime;
-    }
-
-    public void setCloseTime(String closeTime) {
-        this.closeTime = closeTime;
-    }
-
-    public Boolean getHidden() {
-        return hidden;
-    }
-
-    public void setHidden(Boolean hidden) {
-        this.hidden = hidden;
+    // 가게 복구 처리
+    public void restoreStore(String updatedBy) {
+        this.hidden = false;  // hidden을 false로 설정하여 복구
+        this.unhide(updatedBy); // 삭제일 및 삭제자 초기화, 수정일 및 수정자 설정
     }
 }
