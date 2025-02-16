@@ -1,11 +1,12 @@
 package com.p1.nomnom.store.entity;
 
+import com.p1.nomnom.common.entity.BaseEntity; // BaseEntity를 import
 import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
 @Table(name = "p_store")
-public class Store {
+public class Store extends BaseEntity { // BaseEntity 상속
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
