@@ -37,4 +37,19 @@ public class Ai extends BaseEntity {
 
     @Column(name = "keyword", columnDefinition = "TEXT")
     private String keyword;
+
+    @Column(name = "hidden", nullable = false)
+    private Boolean hidden = false;
+
+    //AI 응답 숨김 처리 (BaseEntity 기능 활용)
+    public void hide(String deletedBy) {
+        this.hidden = true;  // 숨김 처리 활성화
+        this.markAsDeleted(deletedBy); // BaseEntity의 삭제 관리 메서드 호출
+    }
+
+    //AI 응답 복구 처리 (BaseEntity 기능 활용)
+    public void restore(String updatedBy) {
+        this.hidden = false;  // 숨김 처리 해제
+        this.unhide(updatedBy); // BaseEntity의 복구 관리 메서드 호출
+    }
 }
