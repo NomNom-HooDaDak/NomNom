@@ -33,8 +33,16 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.6'
     // 유효성 검사 의존성 추가
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
     // ai - google gemini
     implementation 'com.google.auth:google-auth-library-oauth2-http:1.18.0'
+
+    implementation 'com.google.cloud:google-cloud-language:2.6.0'
+    implementation 'com.google.protobuf:protobuf-java:4.28.2'
+
+    //JSON으로 가져온 데이터 정리
+    implementation 'org.json:json:20210307'
+
     // Spring Boot Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
     // 스웨거
@@ -47,6 +55,8 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
+
+
 tasks.named('test') {
     useJUnitPlatform()
 }
