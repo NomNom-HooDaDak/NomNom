@@ -9,6 +9,7 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "p_refreshtoken")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor

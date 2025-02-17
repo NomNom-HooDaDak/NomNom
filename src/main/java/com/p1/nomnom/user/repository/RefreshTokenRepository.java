@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
-    Optional<RefreshToken> findByUsername(String username); // username을 기준으로 토큰 조회
+    Optional<RefreshToken> findByUsername(String username);
     Optional<RefreshToken> findByRefreshToken(String refreshToken);
-    void deleteByUsername(String username); // 로그아웃 시 Refresh Token 삭제
+    void deleteByUsername(String username);
 }

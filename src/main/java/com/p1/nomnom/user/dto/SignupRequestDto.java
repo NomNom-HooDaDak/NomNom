@@ -35,4 +35,6 @@ public class SignupRequestDto {
 
     @NotBlank(message = "주소는 필수 입력 항목입니다.")
     private String address;
+
+    private String adminCode; // ADMIN 계정 생성을 위한 코드
 }
