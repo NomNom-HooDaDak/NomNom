@@ -1,6 +1,6 @@
 package com.p1.nomnom.orders.dto.request;
 
-import com.p1.nomnom.orderItems.dto.request.OrderItemRequestDto;
+import com.p1.nomnom.orderItems.dto.OrderItemDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

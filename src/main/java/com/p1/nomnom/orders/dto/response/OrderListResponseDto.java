@@ -1,6 +1,5 @@
 package com.p1.nomnom.orders.dto.response;
 
-import com.p1.nomnom.orderItems.dto.response.OrderItemResponseDto;
 import com.p1.nomnom.orders.entity.Order;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,10 +16,9 @@ import java.util.stream.Collectors;
 public class OrderListResponseDto {
     private UUID id;
     private String storeName;
-    private int totalPrice;
+    private Long totalPrice;
     private String status;
     private LocalDateTime createdAt;
-    private List<OrderItemResponseDto> orderItems;
 
     public static OrderListResponseDto from(Order order) {
         return new OrderListResponseDto(
@@ -28,10 +26,7 @@ public class OrderListResponseDto {
                 "",
                 order.getTotalPrice(),
                 order.getStatus().name(),
-                order.getCreatedAt(),
-                order.getOrderItems().stream()
-                        .map(OrderItemResponseDto::from)
-                        .collect(Collectors.toList())
+                order.getCreatedAt()
         );
     }
 }
