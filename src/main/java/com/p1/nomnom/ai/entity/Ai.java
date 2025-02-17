@@ -17,21 +17,21 @@ public class Ai extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(name = "question", nullable = false, length = 255)
+    @Column(name = "question", nullable = false, columnDefinition = "TEXT")
     private String question;
 
-    @Column(name = "answer", nullable = false, length = 255)
+    @Column(name = "answer", nullable = false, columnDefinition = "TEXT")
     private String answer;
 
-    @Column(name = "food_name", nullable = false, length = 255)
+    @Column(name = "food_name", nullable = false, columnDefinition = "TEXT")
     private String foodName;
 
-    @Column(name = "store_id", nullable = false)
+    @Column(name = "store_id")
     private UUID storeId;
 
-    @Column(name = "description_hint", length = 255)
+    @Column(name = "description_hint", columnDefinition = "TEXT")
     private String descriptionHint;
 
-    @Column(name = "keyword", length = 255)
+    @Column(name = "keyword", columnDefinition = "TEXT")
     private String keyword;
 }
