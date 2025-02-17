@@ -6,7 +6,6 @@ import com.p1.nomnom.ai.entity.Ai;
 import com.p1.nomnom.ai.repository.AiRepository;
 import com.p1.nomnom.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
@@ -24,16 +23,10 @@ public class AiServiceImpl implements AiService {
     private final AiRepository aiRepository;
     private final StoreService storeService;
 
-    //@Autowired  대신  @RequiredArgsConstructor
-//    public AiServiceImpl(AiRepository aiRepository, StoreService storeService) {
-//        this.aiRepository = aiRepository;
-//        this.storeService = storeService;
-//    }
-
     @Transactional
     @Override
     public AiResponseDto getAiAnswer(AiRequestDto requestDto) {
-        String answer = "AI로부터 받은 답변";  // AI API 호출 결과
+        String answer = callAiApi(requestDto.getQuestion()); // AI API 호출 (예제)
 
         Ai aiEntity = new Ai();
         aiEntity.setQuestion(requestDto.getQuestion());
@@ -41,6 +34,7 @@ public class AiServiceImpl implements AiService {
         aiEntity.setFoodName(requestDto.getFoodName());
         aiEntity.setDescriptionHint(requestDto.getDescriptionHint());
         aiEntity.setKeyword(requestDto.getKeyword());
+        aiEntity.setStoreId(requestDto.getStoreId());
 
         aiRepository.save(aiEntity);
 
@@ -81,5 +75,10 @@ public class AiServiceImpl implements AiService {
                         storeService.getStoreNameById(ai.getStoreId()), ai.getDescriptionHint(), ai.getKeyword(),
                         ai.getAnswer()))
                 .toList();
+    }
+
+    // AI API 호출 예제 (실제 API 연동 필요)
+    private String callAiApi(String inputText) {
+        return "예제 AI 응답"; // AI API의 실제 응답으로 변경 필요
     }
 }

@@ -1,6 +1,5 @@
 package com.p1.nomnom.food.entity;
 
-//import com.p1.nomnom.food.dto.request.FoodRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
