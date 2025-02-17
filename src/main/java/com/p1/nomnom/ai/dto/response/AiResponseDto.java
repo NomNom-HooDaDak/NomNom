@@ -1,12 +1,16 @@
 package com.p1.nomnom.ai.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AiResponseDto {
     private String question;            // AI가 받은 질문
     private String foodName;            // 음식 이름
@@ -15,12 +19,9 @@ public class AiResponseDto {
     private String descriptionHint;     // 설명 힌트
     private String keyword;             // 설명 키워드
     private String generatedDescription; // AI가 생성한 설명
+    private boolean hidden;
 
-    // 기본 생성자 추가
-    public AiResponseDto() {
-    }
-
-    // 생성자 추가
+    // 생성자
     public AiResponseDto(String question, String foodName, UUID storeId, String storeName,
                          String descriptionHint, String keyword, String generatedDescription) {
         this.question = question;
@@ -30,5 +31,6 @@ public class AiResponseDto {
         this.descriptionHint = descriptionHint;
         this.keyword = keyword;
         this.generatedDescription = generatedDescription;
+        this.hidden = false;
     }
 }
