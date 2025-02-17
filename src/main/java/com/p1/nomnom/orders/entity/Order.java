@@ -45,7 +45,7 @@ public class Order extends BaseEntity {
     private String request;
 
     @Column(name = "total_price", nullable = false)
-    private int totalPrice;
+    private Long totalPrice;
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Payment payment;
@@ -57,11 +57,25 @@ public class Order extends BaseEntity {
     @Column(name = "review_id")
     private UUID reviewId;
 
-    public void setUser(User user) {
-        this.user = user;
-        if (!user.getOrders().contains(this)) {
-            user.getOrders().add(this);
-        }
+    public static Order create( UUID storeId, User user, String phone, UUID addressId, String request) {
+        return new Order(
+                null,
+                storeId,
+                user,
+                phone,
+                addressId,
+                null,
+                request,
+                null,
+                null,
+                Status.PENDING,
+                null
+        );
+    }
+
+    public void updateOrderItemsAndTotalPrice(List<OrderItem> orderItems, Long totalPrice) {
+        this.orderItems = orderItems;
+        this.totalPrice = totalPrice;
     }
 }
 
