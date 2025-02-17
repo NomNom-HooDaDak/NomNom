@@ -38,3 +38,4 @@ public class User {
         this.isDeleted = true;
     }
 }
+
