@@ -18,6 +18,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity // Spring Security 활성화
@@ -66,13 +69,22 @@ public class WebSecurityConfig {
         // 권한 설정
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // 정적 리소스 접근 허용
-                .requestMatchers("/", "/api/user/**").permitAll() // 회원가입 및 로그인 API는 모두 허용
+                .requestMatchers("/api/user/login", "/api/user/signup", "/api/user/token/refresh").permitAll()
                 .requestMatchers("/api/customer/**").hasRole("CUSTOMER") // 고객 전용 API
                 .requestMatchers("/api/owner/**").hasRole("OWNER") // 가게 사장 전용 API
                 .requestMatchers("/api/manager/**").hasRole("MANAGER") // 관리자 전용 API
-                .requestMatchers("/api/master/**").hasRole("MASTER") // 최상위 관리자 전용 API
+                .requestMatchers("/api/master/**").hasRole("MASTER") // 최상위 관리자(ADMIN) 전용 API
                 .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
         );
+
+        // CORS 설정 추가
+        http.cors(cors -> cors.configurationSource(request -> {
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowedOrigins(List.of("*"));
+            config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Refresh-Token"));
+            return config;
+        }));
 
         // JWT 필터 추가 (Authorization -> Authentication 순서)
         http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);

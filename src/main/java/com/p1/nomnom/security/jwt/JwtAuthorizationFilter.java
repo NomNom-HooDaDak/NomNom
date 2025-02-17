@@ -44,6 +44,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 Claims info = jwtUtil.getUserInfoFromToken(accessToken);
                 setAuthentication(info.getSubject());
             } else if (StringUtils.hasText(refreshToken) && jwtUtil.validateToken(refreshToken)) {
+
                 // AccessToken이 만료되고 RefreshToken이 유효하면 새로운 AccessToken 발급
                 Optional<RefreshToken> storedToken = refreshTokenRepository.findByRefreshToken(refreshToken);
                 if (storedToken.isPresent()) {

@@ -52,14 +52,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
         UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
 
-        // AccessToken & RefreshToken 생성
         String accessToken = jwtUtil.createAccessToken(username, role);
-        RefreshToken refreshToken = jwtUtil.createRefreshToken(username);
+        RefreshToken refreshToken = jwtUtil.createRefreshToken(username, role);
 
-        // RefreshToken을 DB에 저장 (기존 RefreshToken이 있다면 업데이트)
         refreshTokenRepository.save(refreshToken);
 
-        // 응답 헤더에 토큰 추가
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
         response.addHeader(JwtUtil.REFRESH_TOKEN_HEADER, refreshToken.getRefreshToken());
     }
