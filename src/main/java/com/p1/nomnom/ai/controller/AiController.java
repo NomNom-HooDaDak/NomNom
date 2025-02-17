@@ -4,57 +4,54 @@ import com.p1.nomnom.ai.dto.request.AiRequestDto;
 import com.p1.nomnom.ai.dto.response.AiResponseDto;
 import com.p1.nomnom.ai.entity.Ai;
 import com.p1.nomnom.ai.service.AiService;
-import com.p1.nomnom.store.service.StoreService;
 import com.p1.nomnom.ai.GeminiService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.UUID;
+import com.p1.nomnom.store.service.StoreService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/nom/ai")
+@RequiredArgsConstructor
 public class AiController {
 
     private final AiService aiService;
     private final GeminiService geminiService;
-    private final StoreService storeService;  // StoreService를 추가합니다.
-
-    @Autowired
-    public AiController(AiService aiService, GeminiService geminiService, StoreService storeService) {
-        this.aiService = aiService;
-        this.geminiService = geminiService;
-        this.storeService = storeService;  // StoreService 주입
-    }
+    private final StoreService storeService;
 
     // AI 상품 설명 자동 생성
     @PostMapping("/foods/description")
     public AiResponseDto generateFoodDescription(@RequestBody AiRequestDto requestDto) {
         try {
-            // Gemini로 텍스트 생성 요청 (question, descriptionHint, keyword를 포함)
+            // 🚀 요청 텍스트 마지막에 문구 추가
+            String modifiedQuestion = requestDto.getQuestion().trim() + " 답변을 최대한 간결하게 50자 이하로";
+
+            // AI API 호출
             String generatedDescription = geminiService.generateContent(
-                    requestDto.getQuestion(),
+                    modifiedQuestion,
                     requestDto.getDescriptionHint(),
                     requestDto.getKeyword()
             );
 
-            // storeId로 storeName을 찾기
+            // 🔥 255자 이상이면 자르기
+            if (generatedDescription.length() > 255) {
+                generatedDescription = generatedDescription.substring(0, 255);
+            }
+
+            // storeId로 storeName 조회
             String storeName = storeService.getStoreNameById(requestDto.getStoreId());
 
             // AI 응답을 DB에 저장
             Ai aiEntity = new Ai();
-            aiEntity.setQuestion(requestDto.getQuestion());  // 받아온 질문을 저장
+            aiEntity.setQuestion(requestDto.getQuestion());
             aiEntity.setAnswer(generatedDescription);
             aiEntity.setFoodName(requestDto.getFoodName());
             aiEntity.setDescriptionHint(requestDto.getDescriptionHint());
             aiEntity.setKeyword(requestDto.getKeyword());
-            aiEntity.setStoreId(requestDto.getStoreId());  // store_id는 UUID로 변환
+            aiEntity.setStoreId(requestDto.getStoreId());
 
-            aiService.save(aiEntity);  // DB에 저장 aiService - save 메서드
+            aiService.save(aiEntity); // save 메서드 사용
 
-            // 응답 객체 반환
+            // 응답 반환
             return new AiResponseDto(
                     aiEntity.getQuestion(),
                     aiEntity.getFoodName(),
@@ -69,4 +66,14 @@ public class AiController {
             return new AiResponseDto("Error generating description", "", null, "", "", "", "Error generating description");
         }
     }
+
+    // 기존 기능 유지: AI 질문 및 응답 가져오기
+    @PostMapping("/answer")
+    public AiResponseDto getAiAnswer(@RequestBody AiRequestDto requestDto) {
+        return aiService.getAiAnswer(requestDto);
+    }
+
+
+
+
 }
