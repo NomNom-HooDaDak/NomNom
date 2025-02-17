@@ -28,15 +28,22 @@ public class OrderItem extends BaseEntity {
     private UUID foodId;
 
     @Column(nullable = false)
+    private String foodName;
+
+    @Column(nullable = false)
     private int quantity;
 
     @Column(nullable = false)
     private int price;
 
-    public void setOrder(Order order) {
-        this.order = order;
-        if (order != null && !order.getOrderItems().contains(this)) {
-            order.getOrderItems().add(this);
-        }
+    public static OrderItem create(Order order, UUID foodId, String foodName, int quantity, int price) {
+        return new OrderItem(
+                null,
+                order,
+                foodId,
+                foodName,
+                quantity,
+                price
+        );
     }
 }
