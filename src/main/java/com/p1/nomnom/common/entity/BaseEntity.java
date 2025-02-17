@@ -61,4 +61,5 @@ public abstract class BaseEntity {
         this.updatedAt = LocalDateTime.now(); // 수정일을 현재 시간으로 설정
         this.updatedBy = updatedBy; // 수정자를 지정한 값으로 설정
     }
+
 }

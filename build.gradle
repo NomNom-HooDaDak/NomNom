@@ -33,6 +33,12 @@ dependencies {
     // ai - google gemini
     implementation 'com.google.auth:google-auth-library-oauth2-http:1.18.0'
 
+    implementation 'com.google.cloud:google-cloud-language:2.6.0'
+    implementation 'com.google.protobuf:protobuf-java:4.28.2'
+
+    //JSON으로 가져온 데이터 정리
+    implementation 'org.json:json:20210307'
+
     // Spring Boot Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
