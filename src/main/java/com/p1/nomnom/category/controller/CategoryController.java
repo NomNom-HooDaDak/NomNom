@@ -3,6 +3,8 @@ package com.p1.nomnom.category.controller;
 import com.p1.nomnom.category.dto.request.CategoryRequestDTO;
 import com.p1.nomnom.category.dto.response.CategoryResponseDTO;
 import com.p1.nomnom.category.service.CategoryService;
+import com.p1.nomnom.security.aop.RoleCheck;
+import com.p1.nomnom.user.entity.UserRoleEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +20,15 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService; // 카테고리 서비스 의존성 주입
 
-    // 카테고리 생성 엔드포인트 (모두 가능)
+    // 카테고리 생성 엔드포인트 (매니저, 마스터)
+    @RoleCheck({UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @PostMapping
     public ResponseEntity<CategoryResponseDTO> createCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) {
         return ResponseEntity.ok(categoryService.createCategory(categoryRequestDTO));
     }
 
     // 서치 기능을 포함한 카테고리 조회 (모두 가능)
+    @RoleCheck({UserRoleEnum.CUSTOMER, UserRoleEnum.OWNER, UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @GetMapping
     public ResponseEntity<List<CategoryResponseDTO>> getCategories(
             @RequestParam(defaultValue = "10") int pageSize,
@@ -48,18 +52,21 @@ public class CategoryController {
     }
 
     // 카테고리 수정 (ID 기반으로) 엔드포인트 (MANAGER, MASTER만 가능)
+    @RoleCheck({UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @PatchMapping("/updateById/{categoryId}")
     public ResponseEntity<CategoryResponseDTO> updateCategoryById(@PathVariable UUID categoryId, @RequestBody CategoryRequestDTO categoryRequestDTO) {
         return ResponseEntity.ok(categoryService.updateCategoryById(categoryId, categoryRequestDTO));
     }
 
     // 카테고리 숨기기 (삭제, ID 기반) 엔드포인트 (MANAGER, MASTER만 가능)
+    @RoleCheck({UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @PatchMapping("/hideById/{categoryId}")
     public ResponseEntity<CategoryResponseDTO> hideCategoryById(@PathVariable UUID categoryId, @RequestParam String deletedBy) {
         return ResponseEntity.ok(categoryService.hideCategory(categoryId));
     }
 
     // 카테고리 복구 (Unhide) 엔드포인트 (MANAGER, MASTER만 가능)
+    @RoleCheck({UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @PatchMapping("/unhide/{categoryId}")
     public ResponseEntity<CategoryResponseDTO> unhideCategory(@PathVariable UUID categoryId) {
         return ResponseEntity.ok(categoryService.unhideCategory(categoryId));
