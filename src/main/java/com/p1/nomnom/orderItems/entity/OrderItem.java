@@ -34,9 +34,9 @@ public class OrderItem extends BaseEntity {
     private int quantity;
 
     @Column(nullable = false)
-    private int price;
+    private Long price;
 
-    public static OrderItem create(Order order, UUID foodId, String foodName, int quantity, int price) {
+    public static OrderItem create(Order order, UUID foodId, String foodName, int quantity, Long price) {
         return new OrderItem(
                 null,
                 order,

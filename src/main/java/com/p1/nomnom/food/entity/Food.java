@@ -36,7 +36,7 @@ public class Food extends BaseEntity {
     @Column(nullable = false)
     // 음식 가격 값의 타입이 숫자 타입의 경우
     // BigDecimal, int, Long 타입 고려해야함
-    private String price; // 음식 가격
+    private Long price; // 음식 가격
 
     // 음식 사진은 null 이어도 된다.
 
