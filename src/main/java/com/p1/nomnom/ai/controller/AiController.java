@@ -3,6 +3,8 @@ package com.p1.nomnom.ai.controller;
 import com.p1.nomnom.ai.dto.request.AiRequestDto;
 import com.p1.nomnom.ai.dto.response.AiResponseDto;
 import com.p1.nomnom.ai.service.AiService;
+import com.p1.nomnom.security.aop.RoleCheck;
+import com.p1.nomnom.user.entity.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +21,14 @@ public class AiController {
     private final AiService aiService;
 
     // AI 상품 설명 자동 생성
+    @RoleCheck({UserRoleEnum.OWNER, UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @PostMapping("/foods/description")
     public AiResponseDto generateFoodDescription(@RequestBody AiRequestDto requestDto) {
         return aiService.getAiAnswer(requestDto);
     }
 
     // 모든 AI 응답 조회 (검색 + 페이지네이션 + 정렬)
+    @RoleCheck({UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @GetMapping("/all")
     public ResponseEntity<List<AiResponseDto>> getAllAiAnswers(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -37,6 +41,7 @@ public class AiController {
     }
 
     // 특정 가게의 AI 응답 조회
+    @RoleCheck({UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @GetMapping("/store/{storeId}")
     public ResponseEntity<List<AiResponseDto>> getAiAnswersByStore(
             @PathVariable UUID storeId,
@@ -50,6 +55,7 @@ public class AiController {
     }
 
     // 특정 키워드로 AI 응답 검색
+    @RoleCheck({UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @GetMapping("/search")
     public ResponseEntity<List<AiResponseDto>> searchAiAnswersByKeyword(
             @RequestParam String keyword,
@@ -63,6 +69,7 @@ public class AiController {
     }
 
     // AI 응답 숨김 처리
+    @RoleCheck({UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @PatchMapping("/{aiId}/hide")
     public ResponseEntity<AiResponseDto> hideAiAnswer(
             @PathVariable UUID aiId,
@@ -74,6 +81,7 @@ public class AiController {
     }
 
     // AI 응답 복구 처리
+    @RoleCheck({UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @PatchMapping("/{aiId}/restore")
     public ResponseEntity<AiResponseDto> restoreAiAnswer(
             @PathVariable UUID aiId,

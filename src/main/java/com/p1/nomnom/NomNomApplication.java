@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @EntityScan(basePackages = "com.p1.nomnom")
 @EnableJpaRepositories(basePackages = "com.p1.nomnom")
-@SpringBootApplication(exclude = SecurityAutoConfiguration.class)
+@SpringBootApplication
 @EnableJpaAuditing
 public class NomNomApplication {
     public static void main(String[] args) {
