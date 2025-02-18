@@ -1,15 +1,16 @@
 package com.p1.nomnom.orders.entity;
 
-import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.p1.nomnom.common.entity.BaseEntity;
 import com.p1.nomnom.orderItems.entity.OrderItem;
-import com.p1.nomnom.reviews.entity.Review;
+import com.p1.nomnom.payment.entity.Payment;
+import com.p1.nomnom.user.entity.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -18,58 +19,63 @@ import java.util.List;
 @AllArgsConstructor
 public class Order extends BaseEntity {
     @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "order_id")
-    private String id = NanoIdUtils.randomNanoId();;
+    private UUID id;
 
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    private Status status;
+    @Column(name = "store_id", nullable = false)
+    private UUID storeId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Column(nullable = false)
+    private String phone;
+
+    @Column(name = "address_id", nullable = false)
+    private UUID addressId;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(nullable = false)
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     @Column(columnDefinition = "TEXT")
     private String request;
 
-    // 생명주기 생성과 삭제에 밀접한관련이 있나
-    // 오더아이템 주문한 목록 / 오더는 주문
-    // 오더아이템이 삭제될 경우 주문도 영향이간다
-    // 주문 삭제될 경우 오더아이템은 없어야한다 pk fk 참조하는관계 즉 조인가능하다
-    // 유저같은경우
-    // 주문이 삭제된다고해서 유저가 삭제가 되나요?
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id")
-//    private User user; -> N+1쿼리 문제
-
-    @Column(name = "user_id")
-    @NotNull
-    private Long userId;
-
-    @Column(name = "user_name")
-    @NotNull
-    private String userName;
-
-    @NotNull
-    private String phone;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "address_id")
-//    private Address address;
-
-    @Column(name = "address_id")
-    @NotNull
-    private String addressId;
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    @NotNull
-    private List<OrderItem> orderItems = new ArrayList<>();
-
-    @Column(name = "total_price")
-    @NotNull
-    private int totalPrice;
-
-    @NotNull
-    private String method;
+    @Column(name = "total_price", nullable = false)
+    private Long totalPrice;
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Review review;
+    private Payment payment;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
+
+    @Column(name = "review_id")
+    private UUID reviewId;
+
+    public static Order create( UUID storeId, User user, String phone, UUID addressId, String request) {
+        return new Order(
+                null,
+                storeId,
+                user,
+                phone,
+                addressId,
+                null,
+                request,
+                null,
+                null,
+                Status.PENDING,
+                null
+        );
+    }
+
+    public void updateOrderItemsAndTotalPrice(List<OrderItem> orderItems, Long totalPrice) {
+        this.orderItems = orderItems;
+        this.totalPrice = totalPrice;
+    }
 }
 

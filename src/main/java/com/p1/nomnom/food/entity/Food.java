@@ -40,12 +40,11 @@ public class Food {
     // --- jpg나 png로 들어온 것을 로컬에 저장하든 클라우드에 저장하든 해야함.
     private String image; // 음식 사진 url
 
-
-    /*public Food(String storeId, FoodRequestDto requestDto) {
-        this.storeId = storeId;
-        this.name = requestDto.getName();
-        this.description = requestDto.getDescription();
-        this.price = requestDto.getPrice();
-        this.image = requestDto.getImage();
-    }*/
+//    public Food(String storeId, FoodRequestDto requestDto) {
+//        this.storeId = storeId;
+//        this.name = requestDto.getName();
+//        this.description = requestDto.getDescription();
+//        this.price = requestDto.getPrice();
+//        this.image = requestDto.getImage();
+//    }
 }

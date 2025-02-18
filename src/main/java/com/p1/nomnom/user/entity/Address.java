@@ -26,4 +26,6 @@ public class Address {
 
     @Column(name = "is_default", nullable = false)
     private boolean isDefault;
+
 }
+
