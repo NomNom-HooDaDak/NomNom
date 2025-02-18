@@ -1,6 +1,7 @@
 package com.p1.nomnom.payment.entity;
 
 import com.p1.nomnom.orders.entity.Order;
+import com.p1.nomnom.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,10 +44,14 @@ public class Payment { // 기본 엔터티 만들어서 extends 할 예정
     private Status status;
     // private Order order; // order 테이블의 pk를 참조함
     // order 테이블에 total_price 가 있어서 @OneToOne
-    private String orderId;
+//    private String orderId;
     // 결제 식별 역할, 고유한, 빈 값 허용하지 않음
     @Column(unique = true, nullable = false)
     private String paymentKey;
+
+    @ManyToOne
+    @JoinColumn(name = "store_id")  // DB에서는 store_id로 매핑
+    private Store store;
 
     @OneToOne
     @JoinColumn(name = "order_id", nullable = false, unique = true)

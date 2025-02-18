@@ -29,5 +29,5 @@ public class OrderRequestDto {
 //    private PaymentMethod method;
 
     @NotNull
-    private List<OrderItemRequest> orderItems;
+    private List<OrderItemDto> orderItems;
 }
