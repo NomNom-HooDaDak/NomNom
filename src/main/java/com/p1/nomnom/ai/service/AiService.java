@@ -10,6 +10,8 @@ import java.util.UUID;
 public interface AiService {
     AiResponseDto getAiAnswer(AiRequestDto requestDto);
 
+    //AiResponseDto generateFoodDescription(AiRequestDto requestDto); //
+
     List<AiResponseDto> getAllAiAnswers(int page, int size, Sort sort);
 
     List<AiResponseDto> getAiAnswersByStore(UUID storeId, int page, int size, Sort sort);
@@ -18,5 +20,7 @@ public interface AiService {
 
     AiResponseDto hideAiAnswer(UUID aiId, String deletedBy);
     AiResponseDto restoreAiAnswer(UUID aiId, String updatedBy);
+
+
 
 }
