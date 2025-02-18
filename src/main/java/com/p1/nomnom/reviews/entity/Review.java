@@ -16,7 +16,6 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
 public class Review extends BaseEntity {
     @Id
     @GeneratedValue(generator = "UUID")
