@@ -38,6 +38,16 @@ public class User {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false; // Soft Delete 기능
 
+    public User(String username, String email, String password, String phone, UserRoleEnum role, boolean isDeleted) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.role = role;
+        this.isDeleted = isDeleted;
+    }
+
+
     public void deleteUser() {
         this.isDeleted = true;
     }
