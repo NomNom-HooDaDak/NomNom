@@ -5,8 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@SpringBootApplication(exclude = SecurityAutoConfiguration.class)
-@EnableJpaAuditing // JPA Auditing 기능 활성화
+@SpringBootApplication(scanBasePackages = "com.p1.nomnom")
+@EnableJpaAuditing(auditorAwareRef = "auditorAwareImpl")
 public class NomNomApplication {
 
     public static void main(String[] args) {
