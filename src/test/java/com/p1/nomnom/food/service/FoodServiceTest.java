@@ -1,16 +1,10 @@
 package com.p1.nomnom.food.service;
 
-import com.p1.nomnom.category.entity.Category;
 import com.p1.nomnom.food.dto.request.FoodRequestDto;
 import com.p1.nomnom.food.dto.response.FoodResponseDto;
 import com.p1.nomnom.food.entity.Food;
 import com.p1.nomnom.food.repository.FoodRepository;
-import com.p1.nomnom.store.dto.request.StoreRequestDTO;
 import com.p1.nomnom.store.entity.Store;
-import com.p1.nomnom.store.repository.StoreRepository;
-import com.p1.nomnom.store.service.StoreServiceImpl;
-import com.p1.nomnom.user.entity.User;
-import com.p1.nomnom.user.entity.UserRoleEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -19,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @SpringBootTest
