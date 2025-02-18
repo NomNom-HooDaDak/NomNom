@@ -41,8 +41,9 @@ public class User {
     public void deleteUser() {
         this.isDeleted = true;
     }
-
+  
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(nullable = false)
     private List<Order> orders = new ArrayList<>();
 }
+
