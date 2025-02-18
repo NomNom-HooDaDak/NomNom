@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -122,9 +119,13 @@ public class FoodService {
             food.setDescription(updateRequestDto.getDescription());
         }
 
-        if(updateRequestDto.getPrice() != null && !(updateRequestDto.getPrice().isBlank()) && !food.getPrice().equals(updateRequestDto.getPrice())) {
-            food.setPrice(updateRequestDto.getName());
+        if (updateRequestDto.getPrice() != null && !food.getPrice().equals(updateRequestDto.getPrice())) {
+            food.setPrice(Long.parseLong(updateRequestDto.getName()));
         }
+
+//        if(updateRequestDto.getPrice() != null && !(updateRequestDto.getPrice().isBlank()) && !food.getPrice().equals(updateRequestDto.getPrice())) {
+//            food.setPrice(updateRequestDto.getName());
+//        }
 
         if(!updateRequestDto.getImage().equals(food.getImage())) {
             food.setImage(updateRequestDto.getImage());
@@ -156,5 +157,10 @@ public class FoodService {
         food.hide("OWNER");
 
         return new FoodResponseDto(foodRepository.save(food));
+    }
+
+
+    public List<Food> getFoodsByIds(List<UUID> foodIds) {
+        return foodRepository.findAllById(foodIds);
     }
 }
