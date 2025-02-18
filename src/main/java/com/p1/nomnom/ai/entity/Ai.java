@@ -7,13 +7,13 @@ import lombok.*;
 
 import java.util.UUID;
 
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @Getter
-@Setter
 @Entity
 @Builder
 @AllArgsConstructor  //Builder패턴 생성자 추가
-@NoArgsConstructor  //기본 생성자 추가(JPA)
+@NoArgsConstructor// ombok의 @NoArgsConstructor(force = true)를 사용하면 final 필드가 있을 때도 강제로 기본 생성자를 추가해 오류를 방지
+
 @Table(name = "p_ai")
 public class Ai extends BaseEntity {
 
@@ -41,6 +41,7 @@ public class Ai extends BaseEntity {
     @Column(name = "keyword", columnDefinition = "TEXT")
     private String keyword;
 
+    @Builder.Default
     @Column(name = "hidden", nullable = false)
     private Boolean hidden = false;
 
