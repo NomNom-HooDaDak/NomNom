@@ -31,7 +31,7 @@ public class Food {
     @Column(nullable = false)
     // 음식 가격 값의 타입을 숫자 타입으로 바꾼다면
     // BigDecimal, int, Long 타입 고려해야함
-    private String price; // 음식 가격
+    private int price; // 음식 가격
 
     // 음식 사진은 null 이어도 된다.
 
