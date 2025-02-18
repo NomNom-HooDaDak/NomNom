@@ -5,8 +5,8 @@ import com.p1.nomnom.ai.dto.request.AiRequestDto;
 import com.p1.nomnom.ai.dto.response.AiResponseDto;
 import com.p1.nomnom.ai.entity.Ai;
 import com.p1.nomnom.ai.repository.AiRepository;
+import com.p1.nomnom.ai.utils.AiResponseParser;
 import com.p1.nomnom.store.service.StoreService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,50 +24,52 @@ public class AiServiceImpl implements AiService {
 
     private final AiRepository aiRepository;
     private final StoreService storeService;
-    private final GeminiService geminiService;  // 🚀 Gemini AI 연동 추가
+    private final GeminiService geminiService;
 
     @Transactional
     @Override
     public AiResponseDto getAiAnswer(AiRequestDto requestDto) {
-        // 요청 텍스트 마지막에 문구 추가 (사용량 절감 목적)
-        String modifiedQuestion = requestDto.getQuestion().trim() + " 답변을 최대한 간결하게 50자 이하로";
+        try {
+            String modifiedQuestion = requestDto.getQuestion().trim() + " 답변을 최대한 간결하게 50자 이하로";
+            String generatedDescription = geminiService.generateContent(
+                    modifiedQuestion,
+                    requestDto.getDescriptionHint(),
+                    requestDto.getKeyword()
+            );
+            String extractedText = AiResponseParser.extractTextFromGeneratedDescription(generatedDescription);
 
-        // Gemini AI API 호출
-        String answer = geminiService.generateContent(
-                modifiedQuestion,
-                requestDto.getDescriptionHint(),
-                requestDto.getKeyword()
-        );
+            if (extractedText.length() > 255) {
+                extractedText = extractedText.substring(0, 255);
+            }
 
-        //255자 이상이면 자르기
-        if (answer.length() > 255) {
-            answer = answer.substring(0, 255);
+            Ai ai = Ai.builder()
+                    .question(requestDto.getQuestion())
+                    .foodName(requestDto.getFoodName())
+                    .storeId(requestDto.getStoreId())
+                    .descriptionHint(requestDto.getDescriptionHint())
+                    .keyword(requestDto.getKeyword())
+                    .answer(extractedText)
+                    .generatedDescription(generatedDescription) // 원본 JSON 저장 추가
+                    .hidden(Boolean.FALSE) // 기본값 false 설정 추가
+                    .build();
+            aiRepository.save(ai);
+
+            String storeName = storeService.getStoreNameById(requestDto.getStoreId());
+
+            return AiResponseDto.builder()
+                    .question(ai.getQuestion())
+                    .foodName(ai.getFoodName())
+                    .storeId(ai.getStoreId())
+                    .storeName(storeName)
+                    .descriptionHint(ai.getDescriptionHint())
+                    .keyword(ai.getKeyword())
+                    .generatedDescription(ai.getGeneratedDescription()) // 원본 JSON 반환 추가
+                    .answer(ai.getAnswer())
+                    .hidden(ai.getHidden() != null ? ai.getHidden() : Boolean.FALSE) // null 방지
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException("음식 설명 생성 중 오류 발생", e);
         }
-
-        // AI 응답 저장
-        Ai aiEntity = new Ai();
-        aiEntity.setQuestion(requestDto.getQuestion());
-        aiEntity.setAnswer(answer);
-        aiEntity.setFoodName(requestDto.getFoodName());
-        aiEntity.setDescriptionHint(requestDto.getDescriptionHint());
-        aiEntity.setKeyword(requestDto.getKeyword());
-        aiEntity.setStoreId(requestDto.getStoreId());
-
-        aiRepository.save(aiEntity);
-
-        // storeId로 storeName을 조회
-        String storeName = storeService.getStoreNameById(requestDto.getStoreId());
-
-        return new AiResponseDto(
-                aiEntity.getQuestion(),
-                aiEntity.getFoodName(),
-                aiEntity.getStoreId(),
-                storeName,
-                aiEntity.getDescriptionHint(),
-                aiEntity.getKeyword(),
-                answer,
-                aiEntity.getHidden()
-        );
     }
 
     @Override
@@ -76,9 +78,17 @@ public class AiServiceImpl implements AiService {
         Page<Ai> pageResult = aiRepository.findAll(pageable);
 
         return pageResult.stream()
-                .map(ai -> new AiResponseDto(ai.getQuestion(), ai.getFoodName(), ai.getStoreId(),
-                        storeService.getStoreNameById(ai.getStoreId()), ai.getDescriptionHint(), ai.getKeyword(),
-                        ai.getAnswer()))
+                .map(ai -> AiResponseDto.builder()
+                        .question(ai.getQuestion())
+                        .foodName(ai.getFoodName())
+                        .storeId(ai.getStoreId())
+                        .storeName(storeService.getStoreNameById(ai.getStoreId()))
+                        .descriptionHint(ai.getDescriptionHint())
+                        .keyword(ai.getKeyword())
+                        .generatedDescription(ai.getGeneratedDescription()) // 원본 JSON 추가
+                        .answer(ai.getAnswer())
+                        .hidden(ai.getHidden() != null ? ai.getHidden() : Boolean.FALSE) // null 방지
+                        .build())
                 .toList();
     }
 
@@ -88,9 +98,17 @@ public class AiServiceImpl implements AiService {
         Page<Ai> pageResult = aiRepository.findAllByStoreId(storeId, pageable);
 
         return pageResult.stream()
-                .map(ai -> new AiResponseDto(ai.getQuestion(), ai.getFoodName(), ai.getStoreId(),
-                        storeService.getStoreNameById(ai.getStoreId()), ai.getDescriptionHint(), ai.getKeyword(),
-                        ai.getAnswer()))
+                .map(ai -> AiResponseDto.builder()
+                        .question(ai.getQuestion())
+                        .foodName(ai.getFoodName())
+                        .storeId(ai.getStoreId())
+                        .storeName(storeService.getStoreNameById(ai.getStoreId()))
+                        .descriptionHint(ai.getDescriptionHint())
+                        .keyword(ai.getKeyword())
+                        .generatedDescription(ai.getGeneratedDescription()) // 원본 JSON 추가
+                        .answer(ai.getAnswer())
+                        .hidden(ai.getHidden() != null ? ai.getHidden() : Boolean.FALSE) // null 방지
+                        .build())
                 .toList();
     }
 
@@ -100,9 +118,17 @@ public class AiServiceImpl implements AiService {
         Page<Ai> pageResult = aiRepository.findByKeywordContaining(keyword, pageable);
 
         return pageResult.stream()
-                .map(ai -> new AiResponseDto(ai.getQuestion(), ai.getFoodName(), ai.getStoreId(),
-                        storeService.getStoreNameById(ai.getStoreId()), ai.getDescriptionHint(), ai.getKeyword(),
-                        ai.getAnswer()))
+                .map(ai -> AiResponseDto.builder()
+                        .question(ai.getQuestion())
+                        .foodName(ai.getFoodName())
+                        .storeId(ai.getStoreId())
+                        .storeName(storeService.getStoreNameById(ai.getStoreId()))
+                        .descriptionHint(ai.getDescriptionHint())
+                        .keyword(ai.getKeyword())
+                        .generatedDescription(ai.getGeneratedDescription()) // 원본 JSON 추가
+                        .answer(ai.getAnswer())
+                        .hidden(ai.getHidden() != null ? ai.getHidden() : Boolean.FALSE) // null 방지
+                        .build())
                 .toList();
     }
 
@@ -111,21 +137,19 @@ public class AiServiceImpl implements AiService {
     public AiResponseDto hideAiAnswer(UUID aiId, String deletedBy) {
         Ai ai = aiRepository.findById(aiId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 AI 응답을 찾을 수 없습니다."));
-
         ai.hide(deletedBy);
         aiRepository.save(ai);
-
-        // 숨김 처리된 상태를 포함한 응답 반환
-        return new AiResponseDto(
-                ai.getQuestion(),
-                ai.getFoodName(),
-                ai.getStoreId(),
-                storeService.getStoreNameById(ai.getStoreId()),
-                ai.getDescriptionHint(),
-                ai.getKeyword(),
-                ai.getAnswer(),
-                ai.getHidden()  // hidden 값 포함
-        );
+        return AiResponseDto.builder()
+                .question(ai.getQuestion())
+                .foodName(ai.getFoodName())
+                .storeId(ai.getStoreId())
+                .storeName(storeService.getStoreNameById(ai.getStoreId()))
+                .descriptionHint(ai.getDescriptionHint())
+                .keyword(ai.getKeyword())
+                .generatedDescription(ai.getGeneratedDescription()) // 원본 JSON 추가
+                .answer(ai.getAnswer())
+                .hidden(ai.getHidden() != null ? ai.getHidden() : Boolean.FALSE) // null 방지
+                .build();
     }
 
     @Transactional
@@ -133,20 +157,18 @@ public class AiServiceImpl implements AiService {
     public AiResponseDto restoreAiAnswer(UUID aiId, String updatedBy) {
         Ai ai = aiRepository.findById(aiId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 AI 응답을 찾을 수 없습니다."));
-
-        ai.restore(updatedBy); // 복구 메서드 호출
+        ai.restore(updatedBy);
         aiRepository.save(ai);
-
-        // 복구된 상태를 포함한 응답 반환
-        return new AiResponseDto(
-                ai.getQuestion(),
-                ai.getFoodName(),
-                ai.getStoreId(),
-                storeService.getStoreNameById(ai.getStoreId()),
-                ai.getDescriptionHint(),
-                ai.getKeyword(),
-                ai.getAnswer(),
-                ai.getHidden() // hidden 값 포함
-        );
+        return AiResponseDto.builder()
+                .question(ai.getQuestion())
+                .foodName(ai.getFoodName())
+                .storeId(ai.getStoreId())
+                .storeName(storeService.getStoreNameById(ai.getStoreId()))
+                .descriptionHint(ai.getDescriptionHint())
+                .keyword(ai.getKeyword())
+                .generatedDescription(ai.getGeneratedDescription()) // 원본 JSON 추가
+                .answer(ai.getAnswer())
+                .hidden(ai.getHidden() != null ? ai.getHidden() : Boolean.FALSE) // null 방지
+                .build();
     }
 }

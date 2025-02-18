@@ -3,14 +3,16 @@ package com.p1.nomnom.ai.entity;
 import com.p1.nomnom.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
+@Builder
+@AllArgsConstructor  //Builder패턴 생성자 추가
+@NoArgsConstructor  //기본 생성자 추가(JPA)
 @Table(name = "p_ai")
 public class Ai extends BaseEntity {
 
@@ -40,6 +42,9 @@ public class Ai extends BaseEntity {
 
     @Column(name = "hidden", nullable = false)
     private Boolean hidden = false;
+
+    @Column(name = "generated_description", columnDefinition = "TEXT")
+    private String generatedDescription;  // AI에서 받은 원본 JSON
 
     //AI 응답 숨김 처리 (BaseEntity 기능 활용)
     public void hide(String deletedBy) {
