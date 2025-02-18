@@ -1,8 +1,12 @@
 package com.p1.nomnom.user.entity;
 
+import com.p1.nomnom.orderItems.entity.OrderItem;
+import com.p1.nomnom.orders.entity.Order;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 @Entity
 @Table(name = "p_users")
 @Getter
@@ -34,7 +38,22 @@ public class User {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false; // Soft Delete 기능
 
+    public User(String username, String email, String password, String phone, UserRoleEnum role, boolean isDeleted) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.role = role;
+        this.isDeleted = isDeleted;
+    }
+
+
     public void deleteUser() {
         this.isDeleted = true;
     }
+  
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(nullable = false)
+    private List<Order> orders = new ArrayList<>();
 }
+

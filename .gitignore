@@ -39,3 +39,36 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Ignore application.properties and application.yml
+src/main/resources/application.properties
+src/main/resources/application.yml
+
+# Ensure resources folder is tracked
+!src/main/resources/
+!src/main/resources/.keep
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Gradle & Maven 빌드 관련
+target/
+build/
+*.jar
+*.war
+
+# 로그 파일
+logs/
+*.log
+
+# 캐시 파일
+*.cache
+*.class
+
+# Local Dependencies (특정 의존성이 로컬에만 있을 경우)
+lib/
+
+

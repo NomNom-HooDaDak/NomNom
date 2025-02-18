@@ -13,7 +13,7 @@ public enum UserRoleEnum {
     }
 
     public String getAuthority() {
-        return this.authority;
+        return authority;
     }
 
     public static class Authority {
@@ -22,4 +22,6 @@ public enum UserRoleEnum {
         public static final String MANAGER = "ROLE_MANAGER"; //
         public static final String MASTER = "ROLE_MASTER"; //
     }
+
 }
+
