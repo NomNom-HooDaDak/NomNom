@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @Getter
 @Setter
 @Entity
