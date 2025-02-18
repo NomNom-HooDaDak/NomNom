@@ -2,9 +2,19 @@ package com.p1.nomnom.orders.dto.response;
 
 import com.p1.nomnom.orders.entity.Order;
 import com.p1.nomnom.orderItems.entity.OrderItem;
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.Comment;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +34,11 @@ public class OrderResponseDto {
     private String status;
     private String request;
     private LocalDateTime createdAt;
+    private String createdBy;
+    private LocalDateTime updatedAt;
+    private String updatedBy;
+    protected LocalDateTime deletedAt;
+    protected String deletedBy;
     private List<OrderItemDto> orderItems; // ✅ 내부 클래스 사용
 
     public static OrderResponseDto from(Order order) {
@@ -37,6 +52,11 @@ public class OrderResponseDto {
                 order.getStatus().name(),
                 order.getRequest(),
                 order.getCreatedAt(),
+                order.getCreatedBy(),
+                order.getUpdatedAt(),
+                order.getUpdatedBy(),
+                order.getDeletedAt(),
+                order.getDeletedBy(),
                 order.getOrderItems().stream()
                         .map(OrderItemDto::from) // ✅ 내부 OrderItemDto 사용
                         .collect(Collectors.toList())
