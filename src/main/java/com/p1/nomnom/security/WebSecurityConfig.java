@@ -74,6 +74,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/owner/**").hasRole("OWNER") // 가게 사장 전용 API
                 .requestMatchers("/api/manager/**").hasRole("MANAGER") // 관리자 전용 API
                 .requestMatchers("/api/master/**").hasRole("MASTER") // 최상위 관리자(ADMIN) 전용 API
+                .requestMatchers("/doc/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                 .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
         );
 
