@@ -10,8 +10,13 @@ import com.p1.nomnom.user.entity.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Role;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -98,6 +103,7 @@ public class FoodController {
     public ResponseEntity<FoodResponseDto> updateFoodInfo(@PathVariable String storeId,
                                                           @PathVariable String foodId,
                                                           @RequestBody FoodRequestDto updateRequestDto) {
+
         log.info("/api/food/{}/{}: PUT, 수정할 데이터: {}", storeId, foodId, updateRequestDto);
         FoodResponseDto foodResponseDto = foodService.updateFoodInfo(storeId, foodId, updateRequestDto);
         return ResponseEntity.ok(foodResponseDto);

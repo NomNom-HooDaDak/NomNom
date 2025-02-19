@@ -37,10 +37,9 @@ VALUES
     ON CONFLICT (id) DO NOTHING;
 
 -- ✅ 음식 데이터 추가
-INSERT INTO p_food (id, store_id, name, description, price, image, hidden)
+INSERT INTO p_food (id, store_id, user_id, name, description, price, image, hidden)
 VALUES
-    ('22222222-2222-2222-2222-222222222222', '11111111-1111-1111-1111-111111111111', '테스트 음식 1', '맛있는 음식', 10000, 'food1.jpg', false),
-    ('33333333-3333-3333-3333-333333333333', '11111111-1111-1111-1111-111111111111', '테스트 음식 2', '매운 음식', 20000, 'food2.jpg', false)
+    ('22222222-2222-2222-2222-222222222222', '11111111-1111-1111-1111-111111111111', 5, '테스트 음식 1', '맛있는 음식', 10000, 'food1.jpg', false)
     ON CONFLICT (id) DO NOTHING;
 
 -- ✅ 주문 데이터 추가
