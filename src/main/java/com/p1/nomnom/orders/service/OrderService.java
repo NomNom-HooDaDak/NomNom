@@ -1,4 +1,5 @@
 package com.p1.nomnom.orders.service;
+import com.p1.nomnom.orders.entity.Status;
 import com.p1.nomnom.user.entity.UserRoleEnum;
 
 
@@ -115,5 +116,12 @@ public class OrderService {
         order.cancel(currentUser.getUsername());
 
         orderRepository.save(order);
+    }
+
+    // 주문 배달 상태 확인 (리뷰서비스에서 사용)
+    public boolean isOrderDelivered(UUID orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("주문이 존재하지 않습니다."));
+        return order.getStatus() == Status.DELIVERED;
     }
 }
