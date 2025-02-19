@@ -19,14 +19,16 @@ VALUES
     ON CONFLICT (id) DO NOTHING;
 
 -- ✅ RefreshToken 추가
-INSERT INTO p_refreshtoken (id, username, refresh_token, expiry_date)
+INSERT INTO p_refreshtoken (username, refresh_token, expiry_date)
 VALUES
-    (1, 'testuser1', 'refreshToken1', NOW() + INTERVAL '7 days'),
-    (2, 'testuser2', 'refreshToken2', NOW() + INTERVAL '7 days'),
-    (3, 'testuser3', 'refreshToken3', NOW() + INTERVAL '7 days'),
-    (4, 'testuser4', 'refreshToken4', NOW() + INTERVAL '7 days'),
-    (5, 'testuser5', 'refreshToken5', NOW() + INTERVAL '7 days')
-    ON CONFLICT (id) DO NOTHING;
+    ('testuser1', 'refreshToken1', NOW() + INTERVAL '7 days'),
+    ('testuser2', 'refreshToken2', NOW() + INTERVAL '7 days'),
+    ('testuser3', 'refreshToken3', NOW() + INTERVAL '7 days'),
+    ('testuser4', 'refreshToken4', NOW() + INTERVAL '7 days'),
+    ('testuser5', 'refreshToken5', NOW() + INTERVAL '7 days')
+    ON CONFLICT (username) DO UPDATE SET
+    refresh_token = EXCLUDED.refresh_token,
+    expiry_date = EXCLUDED.expiry_date;
 
 -- ✅ 가게 데이터 추가
 INSERT INTO p_store (id, category_id, user_id, name, address, phone, open_time, close_time, hidden)

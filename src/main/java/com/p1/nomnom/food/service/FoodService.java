@@ -114,7 +114,8 @@ public class FoodService {
             food.setName(updateRequestDto.getName());
         }
 
-        if(!updateRequestDto.getDescription().equals(food.getDescription())) {
+        if(updateRequestDto.getDescription() != null
+                && !updateRequestDto.getDescription().equals(food.getDescription())) {
             food.setDescription(updateRequestDto.getDescription());
         }
 
@@ -122,7 +123,7 @@ public class FoodService {
             food.setPrice(updateRequestDto.getPrice());
         }
 
-        if(!updateRequestDto.getImage().equals(food.getImage())) {
+        if(updateRequestDto.getImage() != null && !updateRequestDto.getImage().equals(food.getImage())) {
             food.setImage(updateRequestDto.getImage());
         }
 
