@@ -44,8 +44,10 @@ VALUES
 -- ✅ 주문 데이터 추가
 INSERT INTO p_orders (order_id, store_id, user_id, phone, address_id, request, total_price, status, review_id, created_at, updated_at)
 VALUES
-    ('0a6bc8af-fd50-4dad-8265-252fde4b9882', '11111111-1111-1111-1111-111111111111', 1, '010-1111-2222', '55555555-5555-5555-5555-555555555555', '빨리 배달해주세요!', 30000, 'PENDING', null, NOW(), NOW())
-    ON CONFLICT (order_id) DO NOTHING;
+    ('0a6bc8af-fd50-4dad-8265-252fde4b9882', '11111111-1111-1111-1111-111111111111', 1, '010-1111-2222', '55555555-5555-5555-5555-555555555555', '빨리 배달해주세요!', 30000, 'PENDING', null, NOW(), NOW()),
+    ('0a6bc8af-fd50-4dad-2342-252fde4b9882', '11111111-1111-1111-1111-111111111111', 1, '010-1111-2222', '55555555-5555-5555-5555-555555555555', '빨리 배달해주세요!', 30000, 'DELIVERED', null, NOW(), NOW())
+
+ON CONFLICT (order_id) DO NOTHING;
 
 -- ✅ 주문 아이템 추가
 INSERT INTO p_order_items (order_item_id, order_id, food_id, food_name, quantity, price)
@@ -53,3 +55,21 @@ VALUES
     ('44444444-4444-4444-4444-444444444444', '0a6bc8af-fd50-4dad-8265-252fde4b9882', '22222222-2222-2222-2222-222222222222', '테스트 음식 1', 2, 10000),
     ('55555555-5555-5555-5555-555555555555', '0a6bc8af-fd50-4dad-8265-252fde4b9882', '33333333-3333-3333-3333-333333333333', '테스트 음식 2', 1, 20000)
     ON CONFLICT (order_item_id) DO NOTHING;
+
+-- ✅ 리뷰 데이터 추가 (이미지 없이)
+INSERT INTO p_reviews (
+    review_id, user_id, user_name, order_id, store_id, score, content, hidden, created_at, updated_at
+)
+VALUES
+    ('66666666-6666-6666-6666-666666666666', 1, 'testuser1', '0a6bc8af-fd50-4dad-8265-252fde4b9882', '11111111-1111-1111-1111-111111111111', 5, '이 음식 정말 맛있어요!', false, NOW(), NOW()),
+    ('77777777-7777-7777-7777-777777777777', 2, 'testuser2', '0a6bc8af-fd50-4dad-8265-252fde4b9882', '11111111-1111-1111-1111-111111111111', 4, '맛있지만 약간 짠 것 같아요.', false, NOW(), NOW())
+ON CONFLICT (review_id) DO NOTHING;
+
+-- ✅ 리뷰 이미지 테이블에 대한 데이터 추가 (옵션)
+INSERT INTO p_review_images (
+    review_image_id, review_id, url, created_at, updated_at
+)
+VALUES
+    ('88888888-8888-8888-8888-888888888888', '66666666-6666-6666-6666-666666666666', 'image1.jpg', NOW(), NOW()),
+    ('99999999-9999-9999-9999-999999999999', '66666666-6666-6666-6666-666666666666', 'image2.jpg', NOW(), NOW())
+ON CONFLICT (review_image_id) DO NOTHING;
