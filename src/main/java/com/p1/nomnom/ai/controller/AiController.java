@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/nom/ai")
+@RequestMapping("/api/ai")
 @RequiredArgsConstructor
 public class AiController {
 

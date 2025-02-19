@@ -41,6 +41,10 @@ dependencies {
     implementation 'com.google.protobuf:protobuf-java:4.28.2'
 
     //JSON으로 가져온 데이터 정리
+    //swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+
+    //JSON으로 가져온 데이터 정리 parsing
     implementation 'org.json:json:20210307'
 
     // Spring Boot Web

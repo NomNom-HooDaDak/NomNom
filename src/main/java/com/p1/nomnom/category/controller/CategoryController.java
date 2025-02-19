@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/nom/categories") // 카테고리 관련 API 엔드포인트 정의
+@RequestMapping("/api/categories") // 카테고리 관련 API 엔드포인트 정의
 public class CategoryController {
 
     @Autowired
