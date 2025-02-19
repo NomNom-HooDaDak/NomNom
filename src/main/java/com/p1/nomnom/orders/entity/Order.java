@@ -38,7 +38,7 @@ public class Order extends BaseEntity {
     private UUID addressId;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @Column(columnDefinition = "TEXT")
@@ -73,14 +73,14 @@ public class Order extends BaseEntity {
         );
     }
 
-    public void cancel(String deletedBy) {
-        markAsDeleted(deletedBy);
-        this.status = Status.CANCELED;
-    }
-
     public void updateOrderItemsAndTotalPrice(List<OrderItem> orderItems, Long totalPrice) {
         this.orderItems.addAll(orderItems);
         this.totalPrice = totalPrice;
+    }
+
+    public void cancel(String deletedBy) {
+        markAsDeleted(deletedBy);
+        this.status = Status.CANCELED;
     }
 }
 
