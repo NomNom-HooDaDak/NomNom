@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -175,6 +176,16 @@ public class StoreServiceImpl implements StoreService {
                 store.getCreatedAt(), store.getHidden(), store.getDeletedAt());
     }
 
+    // feature_ai 추가부분
+    @Override
+    public String getStoreNameById(UUID storeId) {
+        // storeId로 Store 정보 조회
+        Optional<Store> storeOptional = storeRepository.findById(storeId);
 
+        if (storeOptional.isPresent()) {
+            return storeOptional.get().getName();  // 데이터베이스에서 찾은 storeName 반환
+        }
+        return "알 수 없음";
 
+    }
 }
