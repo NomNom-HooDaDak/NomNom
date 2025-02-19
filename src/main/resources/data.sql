@@ -7,9 +7,9 @@ VALUES ('33333333-3333-3333-3333-333333333333', '한식', false)
 INSERT INTO p_users (id, username, email, password, phone, role, is_deleted)
 VALUES
     (1, 'testuser1', 'test1@email.com', '$2a$10$C1nUZfaWYJnbAlA9.7Unb.w6Rpzdb681klizH4DfGkNLJ.O4VEK86', '01012345671', 'CUSTOMER', false),
-    (2, 'testuser2', 'test2@email.com', '$2a$10$KxadD4hddUbCtVdHUD9BI.LRps9S6SPo1gCvgE8bm9L3r6miAHFG.', '01012345672', 'CUSTOMER', false),
-    (3, 'testuser3', 'test3@email.com', '$2a$10$kVaGnqAZqR3DPC6lGekZBO05twS7GJAFlZpsOdvq5TQBy4MS8Me2m', '01012345673', 'CUSTOMER', false),
-    (4, 'testuser4', 'test4@email.com', '$2a$10$zm/6.0PKF5hy0pUepYIlj.Vm5z1.hkmNRYohLfVXqVnr9foc2r4YO', '01012345674', 'CUSTOMER', false),
+    (2, 'testuser2', 'test2@email.com', '$2a$10$KxadD4hddUbCtVdHUD9BI.LRps9S6SPo1gCvgE8bm9L3r6miAHFG.', '01012345672', 'OWNER', false),
+    (3, 'testuser3', 'test3@email.com', '$2a$10$kVaGnqAZqR3DPC6lGekZBO05twS7GJAFlZpsOdvq5TQBy4MS8Me2m', '01012345673', 'MANAGER', false),
+    (4, 'testuser4', 'test4@email.com', '$2a$10$zm/6.0PKF5hy0pUepYIlj.Vm5z1.hkmNRYohLfVXqVnr9foc2r4YO', '01012345674', 'MASTER', false),
     (5, 'testuser5', 'test5@email.com', '$2a$10$6YPA8H7P7Gck4fhUHrqkSuRzSbeSUJfsPQnH85KWSMA.gigiG/tq.', '01012345675', 'OWNER', false),
     (6, 'testuser6', 'test6@email.com', '$2a$10$x.ugubpXMVYFC6YSxRP9LOa0E8sWXSY2lKVYJWaprJNRH1ZfHu7La', '01012345676', 'OWNER', false),
     (7, 'testuser7', 'test7@email.com', '$2a$10$MtEjSjfpwIx31ivsk41CFe9wT8OgG.eWJgfqjvBAFs8oA1J3y5zPi', '01012345677', 'OWNER', false),
