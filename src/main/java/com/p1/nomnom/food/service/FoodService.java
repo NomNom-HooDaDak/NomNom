@@ -20,16 +20,15 @@ public class FoodService {
 
 
     @Transactional
-    public String createFood(Store store, FoodRequestDto requestDto) {
-        try {
-            Food food = foodRepository.save(new Food(store, requestDto));
-            // food.createBy("박성주");
-            // foodRepository.save(food);
-            // Food food = foodRepository.save(food);
-            return food.getName()+" 메뉴를 등록했습니다.";
-        } catch(Exception e) {
-            e.getStackTrace();
-            return requestDto.getName() + " 메뉴 등록에 실패하였습니다.";
+    public FoodResponseDto createFood(Store store, FoodRequestDto requestDto) {
+         try {
+            Food food = new Food(store, requestDto);
+            food.createBy("박성주");
+            Food savedFood = foodRepository.save(food);
+            return new FoodResponseDto(savedFood);
+         } catch(Exception e) {
+             e.getStackTrace();
+             throw new RuntimeException(requestDto.getName() + " 메뉴 등록에 실패하였습니다.", e);
         }
     }
 
@@ -120,12 +119,8 @@ public class FoodService {
         }
 
         if (updateRequestDto.getPrice() != null && !food.getPrice().equals(updateRequestDto.getPrice())) {
-            food.setPrice(Long.parseLong(updateRequestDto.getName()));
+            food.setPrice(updateRequestDto.getPrice());
         }
-
-//        if(updateRequestDto.getPrice() != null && !(updateRequestDto.getPrice().isBlank()) && !food.getPrice().equals(updateRequestDto.getPrice())) {
-//            food.setPrice(updateRequestDto.getName());
-//        }
 
         if(!updateRequestDto.getImage().equals(food.getImage())) {
             food.setImage(updateRequestDto.getImage());
@@ -158,7 +153,6 @@ public class FoodService {
 
         return new FoodResponseDto(foodRepository.save(food));
     }
-
 
     public List<Food> getFoodsByIds(List<UUID> foodIds) {
         return foodRepository.findAllById(foodIds);

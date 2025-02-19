@@ -6,6 +6,7 @@ import com.p1.nomnom.food.service.FoodService;
 import com.p1.nomnom.store.entity.Store;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,20 +30,27 @@ public class FoodController {
     자신의 storeId 값에 따라 자신이 등록한 음식 목록들을 보여준다.
      */
 
-    // http://localhost:8000/api/food/{storeId}/create
+    // http://localhost:8080/api/food/{storeId}/create
     // 1. User 객체의 Role이 Owner인 사람만 이 요청을 할 수 있게 하고 싶음
     //    아니면 @AuthenticationPrincipal User user --> user 에서 Role 을 꺼내서 확인한 후 Owner 가 아닌 유저들은
     //    "접근 권한이 없습니다" 라는 메시지를 반환해야 하는 로직으로 작성해야 하는지?
     @PostMapping("/{storeId}/create")
     // 등록을 했으니 클라이언트에(가게주인의 브라우저) 반환하는 것은 등록이 되었다거나 안됐다거나 하는 메시지를 반환
     // 그래서 타입은 String? 아니면 ResponseEntity<String>?
-    public String createFood(
+    public ResponseEntity<?> createFood(
             @PathVariable String storeId,
             @RequestBody FoodRequestDto requestDto) {
 
-        // storeId 로 Store 객체 확인
-        Store findStore = foodService.getFindStore(storeId);
-        return foodService.createFood(findStore, requestDto);
+        try {
+            // storeId 로 Store 객체 확인
+            Store findStore = foodService.getFindStore(storeId);
+            // 메뉴 등록을 성공했을 경우 등록한 메뉴 정보를 반환함
+            return ResponseEntity.ok().body(foodService.createFood(findStore, requestDto));
+        } catch(RuntimeException e) {
+            // 예외발생시
+            log.info("FoodController createFood() 메서드 문제발생, 오류 메시지 - {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     // 가게주인 입장에서 자신이 등록한 모든 음식 목록 조회하기
