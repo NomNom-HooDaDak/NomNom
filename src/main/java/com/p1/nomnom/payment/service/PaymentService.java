@@ -65,11 +65,11 @@ public class PaymentService {
         if(payType.equals("CARD")) {
            Payment cardPayment = new Payment();
            cardPayment.setStore(store);
-           cardPayment.setCurrentStatus(Payment.CurrentStatus.PROGRESS);
+           cardPayment.setStatus(Payment.Status.PROGRESS);
            cardPayment.setMethod(Payment.Method.CARD);
            cardPayment.setUserId(order.getUser().getId());
            cardPayment.setOrder(order);
-           cardPayment.createdBy(username);
+           cardPayment.setCreatedBy(username);
            cardPayment.createPaymentKey();
 
             Payment requestCardPayment = Optional.of(paymentRepository.save(cardPayment))
@@ -82,11 +82,11 @@ public class PaymentService {
         } else {
             Payment checkPayment = new Payment();
             checkPayment.setStore(store);
-            checkPayment.setCurrentStatus(Payment.CurrentStatus.SUCCESS); // 현금 결제는 바로 결제 승인
+            checkPayment.setStatus(Payment.Status.SUCCESS); // 현금 결제는 바로 결제 승인
             checkPayment.setMethod(Payment.Method.CHECK);
             checkPayment.setUserId(order.getUser().getId());
             checkPayment.setOrder(order);
-            checkPayment.createdBy(username);
+            checkPayment.setCreatedBy(username);
             checkPayment.createPaymentKey();
 
             log.info("checkPayment {}", checkPayment);
@@ -100,7 +100,7 @@ public class PaymentService {
         }
     }
 
-    @Transactional
+
     public PaymentResponseDto getPaymentInfoOne(UserContext userContext, UUID paymentUUID) {
         Payment findPayment = paymentRepository.findById(paymentUUID).orElseThrow(()-> new IllegalArgumentException("조회하신 결제 내역이 존재하지 않습니다."));
 
@@ -123,5 +123,20 @@ public class PaymentService {
             throw new IllegalArgumentException("자신의 가게에서 발생한 결제 내역만 조회할 수 있습니다.");
         }
         return new PaymentResponseDto(findPayment);
+    }
+
+    @Transactional
+    public PaymentResponseDto cancel(UserContext userContext, UUID paymentUUID) {
+        Payment findPayment = paymentRepository.findById(paymentUUID)
+                .orElseThrow(() -> new IllegalArgumentException("조회하신 결제 내역이 존재하지 않습니다."));
+
+        if (!findPayment.getUserId().equals(userContext.getUserId())) {
+            throw new SecurityException("결제 내역을 조회할 권한이 없습니다.");
+        }
+        findPayment.setStatus(Payment.Status.FAIL);
+        findPayment.setDeletedBy(userContext.getUsername());
+
+        Payment cancelPayment = paymentRepository.save(findPayment);
+        return new PaymentResponseDto(cancelPayment);
     }
 }

@@ -55,7 +55,7 @@ public class PaymentController {
         PaymentResponseDto paymentResponseDto = paymentService.paymentConfirm(username, orderId, totalPrice, payType);
         log.info("paymentResponseDto: {}", paymentResponseDto.toString());
 
-        if((paymentResponseDto.getPaymentMethod() == Payment.Method.CARD) && paymentResponseDto.getCurrentStatus() == Payment.CurrentStatus.PROGRESS)
+        if((paymentResponseDto.getPaymentMethod() == Payment.Method.CARD) && paymentResponseDto.getStatus() == Payment.Status.PROGRESS)
         {
             HashMap<String, Object> response = new HashMap<>();
             response.put("message", "카드 결제 요청이 승인되었습니다. 결제를 진행하세요.");
@@ -64,7 +64,7 @@ public class PaymentController {
             return ResponseEntity.ok().body(response);
         }
 
-        if((paymentResponseDto.getPaymentMethod() == Payment.Method.CHECK) && paymentResponseDto.getCurrentStatus() == Payment.CurrentStatus.SUCCESS)
+        if((paymentResponseDto.getPaymentMethod() == Payment.Method.CHECK) && paymentResponseDto.getStatus() == Payment.Status.SUCCESS)
         {
             HashMap<String, Object> response = new HashMap<>();
             response.put("message", "현금 결제가 완료되었습니다.");
@@ -90,6 +90,27 @@ public class PaymentController {
 
         return ResponseEntity.ok().body(paymentInfoOne);
     }
+
+    // 결제 취소는 오직 CUSTOMER만 가능
+    @Operation(summary = "결제 취소", description = "결제를 취소합니다.")
+    @ApiResponse(responseCode = "200", description = "결제 취소 성공")
+    @CurrentUserInject
+    @RoleCheck({UserRoleEnum.CUSTOMER})
+    @PutMapping("/cancel")
+    public ResponseEntity<?> cancelPayment(
+            @Parameter(description = "결제 ID(UUID)", required = true)
+            @RequestParam UUID paymentUUID,
+            @CurrentUser @Parameter(hidden = true) UserContext userContext) // user 를 받아옴
+    {
+        log.info("api/payment/cancel - PUT");
+        PaymentResponseDto cancelPaymentInfo = paymentService.cancel(userContext, paymentUUID);
+        HashMap<String, Object> response = new HashMap<>();
+        response.put("cancelPaymentInfo", cancelPaymentInfo);
+        response.put("message", "결제가 취소되었습니다.");
+        return ResponseEntity.ok().body(response);
+    }
+
+
 
 
 }

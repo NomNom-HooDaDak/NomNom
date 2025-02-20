@@ -25,7 +25,7 @@ public class PaymentResponseDto {
     private Payment.Method paymentMethod;
 
     // Card 에 해당하는 결제 승인 상태
-    private Payment.CurrentStatus currentStatus;
+    private Payment.Status status;
 
     private Long userId;
 
@@ -35,17 +35,13 @@ public class PaymentResponseDto {
     // private UUID storeId;
     private String storeName;
 
-    // 결제 상태
-    private Payment.CurrentStatus status;
-
     public PaymentResponseDto(Payment payment) {
         this.paymentMethod = payment.getMethod();
-        this.currentStatus = payment.getCurrentStatus();
+        this.status = payment.getStatus();
         this.userId = payment.getUserId();
         // Collection의 addAll()은 리스트타입을 받아서 해당 리스트의 객체를 모두 추가해주는 기능
         this.orderId = payment.getOrder().getId();
         this.orderItemList = customOrderItemList(payment.getOrder().getOrderItems());
-        this.status = payment.getCurrentStatus();
         // this.storeId = payment.getStore().getId();
         this.storeName = payment.getStore().getName();
     }

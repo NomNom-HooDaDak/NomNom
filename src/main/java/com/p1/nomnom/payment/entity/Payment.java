@@ -26,7 +26,7 @@ public class Payment extends BaseEntity {
     //    Method 가 현금인 경우 아예 DONE 처리
     //    Method 가 카드인 경우 FAIL, SUCCESS 로 처리
     @ToString
-    public enum CurrentStatus{
+    public enum Status{
         PROGRESS,
         FAIL,
         SUCCESS
@@ -47,7 +47,7 @@ public class Payment extends BaseEntity {
 
     @Column(name="status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private CurrentStatus currentStatus;
+    private Status status;
 
     // 결제 식별 역할, 고유한, 빈 값 허용하지 않음
     @Column(unique = true, nullable = false)
@@ -65,8 +65,15 @@ public class Payment extends BaseEntity {
         this.paymentKey = UUID.randomUUID();
     }
 
-    public void createdBy(String username) {
+    @Override
+    public void setCreatedBy(String createdBy) {
         this.createdAt = LocalDateTime.now();
-        this.createdBy = username;
+        this.createdBy = createdBy;
+    }
+
+    @Override
+    public void setDeletedBy(String deletedBy) {
+        this.deletedBy = deletedBy;
+        this.deletedAt = LocalDateTime.now();
     }
 }
