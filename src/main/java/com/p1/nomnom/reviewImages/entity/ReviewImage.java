@@ -6,10 +6,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "p_reviews")
+@Table(name = "p_review_images")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -32,5 +33,13 @@ public class ReviewImage extends BaseEntity {
         if (review != null && !review.getReviewImages().contains(this)) {
             review.getReviewImages().add(this);
         }
+    }
+
+    public static ReviewImage create(String url) {
+        return new ReviewImage(
+                null,
+                url,
+                null
+        );
     }
 }
