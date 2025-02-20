@@ -45,7 +45,7 @@ VALUES
 -- ✅ 주문 데이터 추가
 INSERT INTO p_orders (order_id, store_id, user_id, phone, address_id, request, total_price, status, review_id, created_at, updated_at)
 VALUES
-    ('0a6bc8af-fd50-4dad-8265-252fde4b9882', '11111111-1111-1111-1111-111111111111', 1, '010-1111-2222', '55555555-5555-5555-5555-555555555555', '빨리 배달해주세요!', 30000, 'PENDING', null, NOW(), NOW())
+    ('0a6bc8af-fd50-4dad-8265-252fde4b9882', '11111111-1111-1111-1111-111111111111', 1, '010-1111-2222', '55555555-5555-5555-5555-555555555555', '빨리 배달해주세요!', 30000, 'CONFIRMED', null, NOW(), NOW())
     ON CONFLICT (order_id) DO NOTHING;
 
 -- ✅ 주문 아이템 추가
