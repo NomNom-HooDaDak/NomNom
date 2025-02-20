@@ -7,6 +7,8 @@ import com.p1.nomnom.food.service.FoodService;
 import com.p1.nomnom.security.aop.RoleCheck;
 import com.p1.nomnom.store.entity.Store;
 import com.p1.nomnom.user.entity.UserRoleEnum;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,7 +25,8 @@ public class FoodController {
     private final FoodService foodService;
     private final AiService aiService;
 
-    // http://localhost:8080/api/food/11111111-1111-1111-1111-111111111111/create
+    @Operation(summary = "음식 등록", description = "가게 주인이 새로운 음식을 등록합니다.")
+    @ApiResponse(responseCode = "200", description = "음식이 성공적으로 등록되었습니다.")
     @PostMapping("/{storeId}/create")
     @RoleCheck({UserRoleEnum.OWNER})
     public ResponseEntity<?> createFood(
@@ -41,8 +44,8 @@ public class FoodController {
         }
     }
 
-    // 가게주인 입장에서 자신이 등록한 모든 음식 목록 조회하기
-    // 고객 입장에서 자신이 클릭한 음식점의 모든 음식 목록 조회하기
+    @Operation(summary = "모든 음식 목록 조회", description = "특정 가게의 모든 음식을 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "특정 가게의 음식 목록 조회 성공")
     @RoleCheck({UserRoleEnum.OWNER, UserRoleEnum.CUSTOMER, UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @GetMapping("/{storeId}/list") // http://localhost:8000/api/food/{storeId}/list
     public ResponseEntity<?> findAll(@PathVariable String storeId) {
@@ -55,8 +58,8 @@ public class FoodController {
         return ResponseEntity.ok("등록된 음식이 없습니다.");
     }
 
-    // http://localhost:8080/11111111-1111-1111-1111-111111111111/e87dc578-d998-4718-b8a9-1e1325d98eb1
-    // 가게 주인이 등록한 특정 메뉴 조회
+    @Operation(summary = "음식 상세 조회", description = "특정 가게의 특정 음식 정보를 상세히 볼 수 있습니다")
+    @ApiResponse(responseCode = "200", description = "(단일) 음식 조회 성공")
     @RoleCheck({UserRoleEnum.OWNER, UserRoleEnum.CUSTOMER, UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @GetMapping("/{storeId}/{foodId}")
     public FoodResponseDto findFood(@PathVariable String storeId, @PathVariable String foodId) {
@@ -64,9 +67,9 @@ public class FoodController {
         return foodService.findFood(storeId, foodId);
     }
 
+    @Operation(summary = "음식 정보 수정", description = "가게 주인인 특정 음식 정보를 수정합니다.")
+    @ApiResponse(responseCode = "200", description = "음식 정보 수정 성공")
     @RoleCheck({UserRoleEnum.OWNER})
-    // 가게 주인만 접근 가능한 등록 메뉴 수정
-    // 부분 수정만 진행하기 위해 PatchMapping 함.
     @PatchMapping("/{storeId}/{foodId}")
     public ResponseEntity<FoodResponseDto> updateFoodInfo(@PathVariable String storeId,
                                                           @PathVariable String foodId,
@@ -77,7 +80,9 @@ public class FoodController {
         return ResponseEntity.ok(foodResponseDto);
     }
 
-    // 가게 주인만 접근 가능한 메뉴 삭제 기능
+
+    @Operation(summary = "음식 숨김 처리", description = "가게 주인이 등록한 특정 음식 정보를 목록에서 숨깁니다.")
+    @ApiResponse(responseCode = "200", description = "음식 숨김 처리 성공")
     @RoleCheck({UserRoleEnum.OWNER})
     @PatchMapping("/{storeId}/{foodId}/hide")
     public ResponseEntity<?> hideOneMenu(@PathVariable String storeId, @PathVariable String foodId) {
