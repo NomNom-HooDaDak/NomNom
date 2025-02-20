@@ -3,10 +3,16 @@ package com.p1.nomnom.payment.controller;
 import com.p1.nomnom.payment.dto.response.PaymentResponseDto;
 import com.p1.nomnom.payment.entity.Payment;
 import com.p1.nomnom.payment.service.PaymentService;
+import com.p1.nomnom.security.aop.CurrentUser;
+import com.p1.nomnom.security.aop.CurrentUserInject;
 import com.p1.nomnom.security.aop.RoleCheck;
+import com.p1.nomnom.security.aop.UserContext;
 import com.p1.nomnom.security.jwt.JwtUtil;
 import com.p1.nomnom.user.entity.UserRoleEnum;
 import io.jsonwebtoken.Claims;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +34,8 @@ public class PaymentController {
     // 테이블에 저장할 것임
     @RoleCheck({UserRoleEnum.CUSTOMER})
     @GetMapping("/confirm") // http://localhost:8080/api/payment/confirm
+    @Operation(summary = "결제 (승인) 요청", description = "카드 - 결제 요청을 승인합니다, 현금 - 결제를 완료합니다.")
+    @ApiResponse(responseCode = "200", description = "주문 등록 성공")
     public ResponseEntity<?> paymentConfirm(@RequestHeader("Authorization") String token,
                                             @RequestParam String payType,
                                             @RequestParam UUID orderId,
@@ -66,4 +74,22 @@ public class PaymentController {
         }
         return ResponseEntity.badRequest().body("잘못된 결제 요청입니다.");
     }
+
+    @Operation(summary = "단일 결제 내역 조회", description = "특정 결제 내역을 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "단일 결제 내역 조회 성공")
+    @RoleCheck({UserRoleEnum.CUSTOMER, UserRoleEnum.MASTER, UserRoleEnum.MANAGER, UserRoleEnum.OWNER})
+    @CurrentUserInject
+    @GetMapping("/pay_list")
+    public ResponseEntity<?> getPaymentInfoOne(
+            @Parameter(description = "결제 ID(UUID)", required = true)
+            @RequestParam UUID paymentUUID,
+            @CurrentUser @Parameter(hidden = true) UserContext userContext) // user 를 받아옴
+    {
+        log.info("api/payment/pay_list - GET");
+        PaymentResponseDto paymentInfoOne = paymentService.getPaymentInfoOne(userContext, paymentUUID);
+
+        return ResponseEntity.ok().body(paymentInfoOne);
+    }
+
+
 }

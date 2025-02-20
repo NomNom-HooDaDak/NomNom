@@ -54,7 +54,7 @@ public class Payment extends BaseEntity {
     private UUID paymentKey;
 
     @ManyToOne
-    @JoinColumn(name = "store_id")  // DB에서는 store_id로 매핑
+    @JoinColumn(name = "store_id")
     private Store store;
 
     @OneToOne

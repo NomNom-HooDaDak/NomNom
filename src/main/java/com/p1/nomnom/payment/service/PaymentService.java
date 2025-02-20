@@ -6,8 +6,11 @@ import com.p1.nomnom.orders.repository.OrderRepository;
 import com.p1.nomnom.payment.dto.response.PaymentResponseDto;
 import com.p1.nomnom.payment.entity.Payment;
 import com.p1.nomnom.payment.repository.PaymentRepository;
+import com.p1.nomnom.security.aop.UserContext;
 import com.p1.nomnom.store.entity.Store;
 import com.p1.nomnom.store.repository.StoreRepository;
+import com.p1.nomnom.user.entity.User;
+import com.p1.nomnom.user.entity.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -69,7 +72,7 @@ public class PaymentService {
            cardPayment.createdBy(username);
            cardPayment.createPaymentKey();
 
-            Payment requestCardPayment = Optional.ofNullable(paymentRepository.save(cardPayment))
+            Payment requestCardPayment = Optional.of(paymentRepository.save(cardPayment))
                     .orElseThrow(()->new IllegalArgumentException("카드 결제 요청이 승인되지 않았습니다."));
 
             PaymentResponseDto paymentConfirmCardResponseDto = new PaymentResponseDto(requestCardPayment);
@@ -86,7 +89,7 @@ public class PaymentService {
             checkPayment.createdBy(username);
             checkPayment.createPaymentKey();
 
-            log.info("checkPayment {}", checkPayment.toString());
+            log.info("checkPayment {}", checkPayment);
 
             Payment requestCheckPayment = Optional.ofNullable(paymentRepository.save(checkPayment))
                     .orElseThrow(()->new IllegalArgumentException("현금 결제가 완료되지 않았습니다."));
@@ -95,5 +98,30 @@ public class PaymentService {
             log.info("현금 결제 승인 정보: {}", paymentCheckResponseDto);
             return paymentCheckResponseDto;
         }
+    }
+
+    @Transactional
+    public PaymentResponseDto getPaymentInfoOne(UserContext userContext, UUID paymentUUID) {
+        Payment findPayment = paymentRepository.findById(paymentUUID).orElseThrow(()-> new IllegalArgumentException("조회하신 결제 내역이 존재하지 않습니다."));
+
+        log.info("userContext: {}",userContext.getUser()); // userContext: com.p1.nomnom.user.entity.User@2bf1d657
+        log.info("userContext.getUsername(): {}", userContext.getUsername()); // testuser1
+        log.info("findPayment: {}", findPayment.toString());
+
+        // 결제 내역을 조회한 user 정보
+        User user = userContext.getUser();
+
+        // 결제 내역의 가게 정보 가져오기: Payment 를 통해 Store 객체를 얻는다.
+        Store store = findPayment.getStore();
+        // Store에 저장되어 있는 user의 id 를 얻는다.
+        User storeUser = store.getUser();
+
+        if (user.getRole() == UserRoleEnum.CUSTOMER && !user.getId().equals(findPayment.getUserId())) {
+            throw new IllegalArgumentException("결제자와 결제내역 조회자 불일치로 해당 결제 내역을 조회할 권한이 없습니다.");
+        }
+        if (user.getRole() == UserRoleEnum.OWNER && !user.getId().equals(storeUser.getId())) {
+            throw new IllegalArgumentException("자신의 가게에서 발생한 결제 내역만 조회할 수 있습니다.");
+        }
+        return new PaymentResponseDto(findPayment);
     }
 }

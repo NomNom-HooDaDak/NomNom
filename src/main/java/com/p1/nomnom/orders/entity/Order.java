@@ -17,7 +17,6 @@ import java.util.UUID;
 @Table(name = "p_orders")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@ToString
 public class Order extends BaseEntity {
     @Id
     @GeneratedValue(generator = "UUID")
