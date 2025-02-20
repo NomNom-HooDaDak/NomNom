@@ -1,5 +1,6 @@
 package com.p1.nomnom.reviews.dto.response;
 
+import com.p1.nomnom.orders.dto.response.OrderResponseDto;
 import com.p1.nomnom.reviews.entity.Review;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,27 +17,34 @@ import java.util.stream.Collectors;
 public class ReviewResponseDto {
     private UUID id;
     private UUID orderId;
-    private String storeName;
+    private UUID storeId;
     private String userName;
     private int score;
     private String content;
     private List<String> images;
     private LocalDateTime createdAt;
+    private String createdBy;
     private LocalDateTime updatedAt;
-
+    private String updatedBy;
+    protected LocalDateTime deletedAt;
+    protected String deletedBy;//
     public static ReviewResponseDto from(Review review) {
         return new ReviewResponseDto(
                 review.getId(),
                 review.getOrderId(),
-                "",
-                "",
+                review.getStoreId(),
+                review.getUserName(),
                 review.getScore(),
                 review.getContent(),
                 review.getReviewImages().stream()
                         .map(image -> image.getUrl())
                         .collect(Collectors.toList()),
                 review.getCreatedAt(),
-                review.getUpdatedAt()
+                review.getCreatedBy(),
+                review.getUpdatedAt(),
+                review.getUpdatedBy(),
+                review.getDeletedAt(),
+                review.getDeletedBy()
         );
     }
 }
