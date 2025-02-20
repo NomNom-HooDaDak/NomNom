@@ -26,9 +26,10 @@ VALUES
     ('testuser3', 'refreshToken3', NOW() + INTERVAL '7 days'),
     ('testuser4', 'refreshToken4', NOW() + INTERVAL '7 days'),
     ('testuser5', 'refreshToken5', NOW() + INTERVAL '7 days')
-ON CONFLICT (username) DO UPDATE SET
-                                     refresh_token = EXCLUDED.refresh_token,
-                                     expiry_date = EXCLUDED.expiry_date;
+
+    ON CONFLICT (username) DO UPDATE SET
+    refresh_token = EXCLUDED.refresh_token,
+    expiry_date = EXCLUDED.expiry_date;
 
 -- ✅ 가게 데이터 추가
 INSERT INTO p_store (id, category_id, user_id, name, address, phone, open_time, close_time, hidden)
@@ -37,10 +38,10 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- ✅ 음식 데이터 추가
-INSERT INTO p_food (id, store_id, name, description, price, image, hidden)
+INSERT INTO p_food (id, store_id, user_id, name, description, price, image, hidden)
 VALUES
     ('22222222-2222-2222-2222-222222222222', '11111111-1111-1111-1111-111111111111', 5, '테스트 음식 1', '맛있는 음식', 10000, 'food1.jpg', false)
-ON CONFLICT (id) DO NOTHING;
+    ON CONFLICT (id) DO NOTHING;
 
 -- ✅ 주문 데이터 추가
 INSERT INTO p_orders (order_id, store_id, user_id, phone, address_id, request, total_price, status, review_id, created_at, updated_at)

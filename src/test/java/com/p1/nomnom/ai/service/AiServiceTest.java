@@ -1,34 +1,26 @@
 package com.p1.nomnom.ai.service;
 
-import com.p1.nomnom.ai.dto.request.CreateDescriptionRequest;
-import com.p1.nomnom.ai.dto.response.GeneratedDescriptionResponse;
-import com.p1.nomnom.ai.entity.Ai;
-import com.p1.nomnom.ai.repository.AiRepository;
+import com.p1.nomnom.ai.dto.request.AiRequestDto;
+import com.p1.nomnom.ai.dto.response.AiResponseDto;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import static org.junit.jupiter.api.Assertions.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
+class AiServiceTest {
 
-public class AiServiceTest {
+    AiService aiService = new AiService();
 
     @Test
-    public void testGenerateDescription() {
-        // Mock AiRepository
-        AiRepository aiRepository = Mockito.mock(AiRepository.class);
-        AiService aiService = new AiService(aiRepository);
+    void testGetAiAnswer() {
+        AiRequestDto requestDto = new AiRequestDto();
+        requestDto.setQuestion("What is pizza?");
+        requestDto.setFoodName("Pizza");
+        requestDto.setDescriptionHint("Italian dish");
+        requestDto.setKeyword("food");
 
-        // Create test request
-        CreateDescriptionRequest request = new CreateDescriptionRequest();
-        request.setFoodName("Pasta");
-        request.setStoreId(null); // Optional: UUID 사용 가능
-        request.setDescriptionHint("Delicious Italian cuisine");
-        request.setKeyword("Italian");
+        AiResponseDto responseDto = aiService.getAiAnswer(requestDto);
 
-        // Mocking API Response
-        GeneratedDescriptionResponse response = aiService.generateDescription(request);
-
-        // Assert
-        assertThat(response).isNotNull();
-        System.out.println("Generated Description: " + response.getGeneratedDescription());
+        assertNotNull(responseDto);
+        //assertEquals("AI로부터 받은 답변", responseDto.getAnswer());
+        assertEquals("Pizza", responseDto.getFoodName());
     }
 }

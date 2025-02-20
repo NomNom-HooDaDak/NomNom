@@ -5,6 +5,10 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+# 민감한 정보 포함된 설정 파일 무시
+src/main/resources/application-secret.properties
+
+
 ### STS ###
 .apt_generated
 .classpath
@@ -39,6 +43,7 @@ out/
 # Ignore application.properties and application.yml
 src/main/resources/application.properties
 src/main/resources/application.yml
+src/main/resources/application-secret.properties
 
 # Ensure resources folder is tracked
 !src/main/resources/

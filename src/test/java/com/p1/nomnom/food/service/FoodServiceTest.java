@@ -13,9 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 @Slf4j(topic="food_test")
@@ -26,8 +28,9 @@ class FoodServiceTest {
     @Autowired
     private FoodService foodService;
 
-    private final String uuidString = "ec392e45-c668-42a7-a616-bf67dc5df362";
+    private final String uuidString = "11111111-1111-1111-1111-111111111111";
     private final String uuidFoodString = "7611993e-3d1a-4585-b05d-8038f1d77465";
+
 
     @Test
     @DisplayName("(한 명의) 가게 주인이 음식 메뉴 한 개를 등록하기")
@@ -42,7 +45,7 @@ class FoodServiceTest {
 
         FoodRequestDto foodRequestDto = new FoodRequestDto();
         foodRequestDto.setName("후라이드 치킨");
-        foodRequestDto.setPrice("10000");
+        foodRequestDto.setPrice(1000L);
         foodRequestDto.setDescription("너무너무 맛있어요");
         foodRequestDto.setImage("https://store.google.com/regionpicker?hl=en-US");
         // when
@@ -69,7 +72,7 @@ class FoodServiceTest {
         for(int i=0; i<=10; i++) {
             FoodRequestDto foodRequestDto = new FoodRequestDto();
             foodRequestDto.setName("후라이드 치킨"+i);
-            foodRequestDto.setPrice("10000"+i);
+            foodRequestDto.setPrice(10000L+i);
             foodRequestDto.setDescription("너무너무 맛있어요"+i);
             foodRequestDto.setImage("https://store.google.com/regionpicker?hl=en-US"+i);
 
@@ -108,7 +111,7 @@ class FoodServiceTest {
 
         FoodRequestDto foodRequestDto = new FoodRequestDto();
         foodRequestDto.setName("변경했다.");
-        foodRequestDto.setPrice("많이비쌈");
+        foodRequestDto.setPrice(1000000L);
         foodRequestDto.setDescription("과연");
         foodRequestDto.setImage("들어갈것인가");
 
@@ -130,7 +133,7 @@ class FoodServiceTest {
         // String foodId = "7611993e-3d1a-4585-b05d-8038f1d77465";
 
         // when
-        FoodResponseDto foodResponseDto = foodService.hideOneMenu(uuidString, uuidFoodString);
+        foodService.hideOneMenu(uuidString, uuidFoodString);
         Food food = foodRepository.findById(UUID.fromString(uuidFoodString)).orElse(null);
 
         // then

@@ -2,11 +2,11 @@ package com.p1.nomnom.orders.controller;
 
 import com.p1.nomnom.common.aop.CurrentUser;
 import com.p1.nomnom.common.aop.CurrentUserInject;
+import com.p1.nomnom.common.aop.UserContext;
 import com.p1.nomnom.orders.dto.request.OrderRequestDto;
 import com.p1.nomnom.orders.dto.response.OrderResponseDto;
 import com.p1.nomnom.orders.service.OrderService;
 import com.p1.nomnom.security.aop.RoleCheck;
-import com.p1.nomnom.user.entity.User;
 import com.p1.nomnom.user.entity.UserRoleEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -36,12 +36,10 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "주문 등록 성공")
     @RoleCheck({UserRoleEnum.CUSTOMER})
     public OrderResponseDto createOrder(
-            @CurrentUser User currentUser,
+            @CurrentUser @Parameter(hidden = true) UserContext userContext,
             @RequestBody OrderRequestDto orderRequestDto
     ) {
-        log.info("Current user in createOrder: {}", currentUser);
-
-        return orderService.createOrder(currentUser, orderRequestDto);
+        return orderService.createOrder(userContext, orderRequestDto);
     }
 
     @Operation(summary = "특정 주문 조회", description = "특정 주문을 조회합니다.")
@@ -52,9 +50,9 @@ public class OrderController {
     public OrderResponseDto getOrder(
             @Parameter(description = "주문서 ID", required = true)
             @PathVariable UUID orderId,
-            @CurrentUser User currentUser
+            @CurrentUser @Parameter(hidden = true) UserContext userContext
     ) {
-        return orderService.getOrder(orderId, currentUser);
+        return orderService.getOrder(orderId, userContext);
     }
 
 
@@ -64,10 +62,10 @@ public class OrderController {
     @GetMapping
     @CurrentUserInject
     public Page<OrderResponseDto> getOrders(
-            @CurrentUser User currentUser,
+            @CurrentUser @Parameter(hidden = true) UserContext userContext,
             Pageable pageable
     ) {
-        return orderService.getOrders(currentUser, pageable);
+        return orderService.getOrders(userContext, pageable);
     }
 
     @PatchMapping("/{orderId}")
@@ -77,9 +75,9 @@ public class OrderController {
     @RoleCheck({UserRoleEnum.CUSTOMER, UserRoleEnum.OWNER, UserRoleEnum.MASTER, UserRoleEnum.MANAGER})
     public ResponseEntity<Void> cancelOrder(
             @PathVariable UUID orderId,
-            @CurrentUser User currentUser
+            @CurrentUser @Parameter(hidden = true) UserContext userContext
     ) {
-        orderService.cancelOrder(orderId, currentUser);
+        orderService.cancelOrder(orderId, userContext);
         return ResponseEntity.ok().build();
     }
 }
