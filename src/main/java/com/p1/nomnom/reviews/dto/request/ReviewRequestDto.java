@@ -16,6 +16,9 @@ public class ReviewRequestDto {
     private UUID orderId;
 
     @NotNull
+    private UUID storeId;
+
+    @NotNull
     private int score;
 
     @NotNull

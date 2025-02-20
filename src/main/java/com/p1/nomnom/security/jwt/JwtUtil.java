@@ -49,29 +49,40 @@ public class JwtUtil {
 
     // Access Token 생성
     public String createAccessToken(String username, UserRoleEnum role) {
-        return BEARER_PREFIX + createToken(username, role, ACCESS_TOKEN_TIME);
+        log.info("createAccessToken() 호출됨 - username: {}, role: {}", username, role);
+
+        String token = createToken(username, role, ACCESS_TOKEN_TIME);
+
+        log.info("createAccessToken() 완료 - token: {}", token);
+        return BEARER_PREFIX + token;
     }
+
 
     // Refresh Token 생성 (DB 저장용)
     public RefreshToken createRefreshToken(String username, UserRoleEnum role) {
+        log.info("createRefreshToken() 호출됨 - username: {}, role: {}", username, role);
 
         String token = createToken(username, role, REFRESH_TOKEN_TIME);
         LocalDateTime expiryDate = LocalDateTime.now().plusDays(7);
 
-        // RefreshToken 저장 또는 갱신
         Optional<RefreshToken> existingToken = refreshTokenRepository.findByUsername(username);
         if (existingToken.isPresent()) {
+            log.info("기존 RefreshToken 업데이트: {}", existingToken.get().getRefreshToken());
             existingToken.get().updateToken(token, expiryDate);
-            return refreshTokenRepository.save(existingToken.get());
+            refreshTokenRepository.save(existingToken.get());
+            return existingToken.get();
         } else {
+            log.info("새로운 RefreshToken 생성: {}", token);
             RefreshToken newToken = RefreshToken.builder()
                     .username(username)
-                    .refreshToken(token)  // Bearer 없이 저장
+                    .refreshToken(token)
                     .expiryDate(expiryDate)
                     .build();
-            return refreshTokenRepository.save(newToken);
+            refreshTokenRepository.save(newToken);
+            return newToken;
         }
     }
+
 
     // JWT 생성
     public String createToken(String username, UserRoleEnum role, long expirationTime) {
@@ -79,10 +90,10 @@ public class JwtUtil {
         Date validity = new Date(now.getTime() + expirationTime);
 
         return Jwts.builder()
-                .setSubject(username)
+                .subject(username)
                 .claim(AUTHORIZATION_KEY, "ROLE_" + role.name())
-                .setIssuedAt(now)
-                .setExpiration(validity)
+                .issuedAt(now)
+                .expiration(validity)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
