@@ -2,6 +2,7 @@ package com.p1.nomnom.reviews.controller;
 
 import com.p1.nomnom.common.aop.CurrentUser;
 import com.p1.nomnom.common.aop.CurrentUserInject;
+import com.p1.nomnom.common.aop.UserContext;
 import com.p1.nomnom.reviews.dto.request.ReviewRequestDto;
 import com.p1.nomnom.reviews.dto.response.ReviewResponseDto;
 import com.p1.nomnom.reviews.service.ReviewService;
@@ -36,11 +37,9 @@ public class ReviewController {
     @RoleCheck({UserRoleEnum.CUSTOMER})
     public ReviewResponseDto createReview(
             @RequestBody @Valid ReviewRequestDto reviewRequestDto,
-            @CurrentUser @Parameter(hidden = true) User currentUser
+            @CurrentUser @Parameter(hidden = true) UserContext userContext
     ) {
-        System.out.println("Current User Role: " + currentUser.getRole());
-
-        return reviewService.createReview(reviewRequestDto, currentUser);
+        return reviewService.createReview(reviewRequestDto, userContext);
     }
 
     @PutMapping("/{reviewId}")
@@ -51,8 +50,9 @@ public class ReviewController {
     public ReviewResponseDto updateReview(
             @Parameter(description = "리뷰 ID", required = true) @PathVariable UUID reviewId,
             @RequestBody @Valid ReviewRequestDto reviewRequestDto,
-            @CurrentUser @Parameter(hidden = true) User currentUser) {
-        return reviewService.updateReview(reviewId, reviewRequestDto, currentUser);
+            @CurrentUser @Parameter(hidden = true) UserContext userContext
+    ) {
+        return reviewService.updateReview(reviewId, reviewRequestDto, userContext);
     }
 
     @GetMapping
@@ -63,9 +63,9 @@ public class ReviewController {
     public Page<ReviewResponseDto> getReviews(
             @Parameter(description = "스토어 ID", required = true) @RequestParam UUID storeId,
             Pageable pageable,
-            @CurrentUser @Parameter(hidden = true) User currentUser
+            @CurrentUser @Parameter(hidden = true) UserContext userContext
     ) {
-        return reviewService.getReviews(storeId, pageable, currentUser);
+        return reviewService.getReviews(storeId, pageable, userContext);
     }
 
     @GetMapping("/{reviewId}")
@@ -75,9 +75,9 @@ public class ReviewController {
     @RoleCheck({UserRoleEnum.CUSTOMER, UserRoleEnum.OWNER, UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     public ReviewResponseDto getReview(
             @Parameter(description = "스토어 ID", required = true) @PathVariable UUID reviewId,
-            @CurrentUser @Parameter(hidden = true) User currentUser
+            @CurrentUser @Parameter(hidden = true) UserContext userContext
     ) {
-        return reviewService.getReview(reviewId, currentUser);
+        return reviewService.getReview(reviewId, userContext);
     }
 
     @PatchMapping("/{reviewId}")
@@ -87,8 +87,9 @@ public class ReviewController {
     @RoleCheck({UserRoleEnum.CUSTOMER, UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     public ResponseEntity<Void> deleteReview(
             @Parameter(description = "리뷰 ID", required = true) @PathVariable UUID reviewId,
-            @CurrentUser @Parameter(hidden = true) User currentUser) {
-        reviewService.deleteReview(reviewId, currentUser);
+            @CurrentUser @Parameter(hidden = true) UserContext userContext
+    ) {
+        reviewService.deleteReview(reviewId, userContext);
         return ResponseEntity.ok().build();
     }
 }

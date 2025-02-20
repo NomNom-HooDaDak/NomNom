@@ -1,5 +1,6 @@
 package com.p1.nomnom.reviews.service;
 
+import com.p1.nomnom.common.aop.UserContext;
 import com.p1.nomnom.orders.service.OrderService;
 import com.p1.nomnom.reviewImages.entity.ReviewImage;
 import com.p1.nomnom.reviewImages.service.ReviewImageService;
@@ -29,8 +30,8 @@ public class ReviewService {
 
     // 리뷰 생성
     @Transactional
-    public ReviewResponseDto createReview(ReviewRequestDto reviewRequestDto, User currentUser) {
-        if (currentUser.getRole() != UserRoleEnum.CUSTOMER) {
+    public ReviewResponseDto createReview(ReviewRequestDto reviewRequestDto, UserContext userContext) {
+        if (userContext.getRole() != UserRoleEnum.CUSTOMER) {
             throw new IllegalArgumentException("Customer만 리뷰를 작성할 수 있습니다.");
         }
 
@@ -41,8 +42,8 @@ public class ReviewService {
         List<ReviewImage> reviewImages = reviewImageService.createReviewImages(reviewRequestDto.getImages());
 
         Review review = Review.create(
-                currentUser.getId(),
-                currentUser.getUsername(),
+                userContext.getUserId(),
+                userContext.getUsername(),
                 reviewRequestDto.getOrderId(),
                 reviewRequestDto.getStoreId(),
                 reviewRequestDto.getScore(),
@@ -60,14 +61,14 @@ public class ReviewService {
 
     // 리뷰 리스트 조회
     @Transactional(readOnly = true)
-    public Page<ReviewResponseDto> getReviews(UUID storeId, Pageable pageable, User currentUser) {
+    public Page<ReviewResponseDto> getReviews(UUID storeId, Pageable pageable, UserContext userContext) {
         Page<Review> reviews = reviewRepository.findByStoreIdAndHiddenFalse(storeId, pageable);
 
         return reviews.map(ReviewResponseDto::from);
     }
 
     @Transactional(readOnly = true)
-    public ReviewResponseDto getReview(UUID reviewId, User currentUser) {
+    public ReviewResponseDto getReview(UUID reviewId, UserContext userContext) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 리뷰는 존재하지 않습니다."));
 
@@ -76,15 +77,15 @@ public class ReviewService {
 
     // 리뷰 수정
     @Transactional
-    public ReviewResponseDto updateReview(UUID reviewId, ReviewRequestDto reviewRequestDto, User currentUser) {
+    public ReviewResponseDto updateReview(UUID reviewId, ReviewRequestDto reviewRequestDto, UserContext userContext) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 리뷰는 존재하지 않습니다."));
 
-        if (currentUser.getRole() == UserRoleEnum.CUSTOMER && !review.getUserId().equals(currentUser.getId())) {
+        if (userContext.getRole() == UserRoleEnum.CUSTOMER && !review.getUserId().equals(userContext.getUserId())) {
             throw new IllegalArgumentException("본인이 작성한 리뷰만 수정할 수 있습니다.");
         }
 
-        if (currentUser.getRole() == UserRoleEnum.CUSTOMER) {
+        if (userContext.getRole() == UserRoleEnum.CUSTOMER) {
             review.update(reviewRequestDto.getScore(), reviewRequestDto.getContent());
             reviewRepository.save(review);
             return ReviewResponseDto.from(review);
@@ -95,21 +96,21 @@ public class ReviewService {
 
     // 리뷰 삭제 (숨김 처리)
     @Transactional
-    public void deleteReview(UUID reviewId, User currentUser) {
+    public void deleteReview(UUID reviewId, UserContext userContext) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new EntityNotFoundException("리뷰가 존재하지 않습니다."));
 
-        if (currentUser.getRole() == UserRoleEnum.CUSTOMER && !review.getUserId().equals(currentUser.getId())) {
+        if (userContext.getRole() == UserRoleEnum.CUSTOMER && !review.getUserId().equals(userContext.getUserId())) {
             throw new IllegalArgumentException("본인이 작성한 리뷰만 삭제가 가능합니다");
         }
 
-        if (currentUser.getRole() == UserRoleEnum.MANAGER || currentUser.getRole() == UserRoleEnum.MASTER) {
-            review.cancel(currentUser.getUsername());
+        if (userContext.getRole() == UserRoleEnum.MANAGER || userContext.getRole() == UserRoleEnum.MASTER) {
+            review.cancel(userContext.getUsername());
             reviewRepository.save(review);
             return;
         }
 
-        if (currentUser.getRole() == UserRoleEnum.OWNER) {
+        if (userContext.getRole() == UserRoleEnum.OWNER) {
             throw new IllegalArgumentException("작성자와 관리자 이외는 리뷰를 삭제할 수 없습니다.");
         }
     }
