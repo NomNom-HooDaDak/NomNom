@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,8 +33,8 @@ public class PaymentController {
     // 결제 요청이 들어왔고,
     // 해당 결제 요청의 검증 여부를 통해
     // 테이블에 저장할 것임
-    @Operation(summary = "결제 (승인) 요청", description = "결제를 요청합니다.")
-    @ApiResponse(responseCode = "200", description = "주문 등록 성공")
+    @Operation(summary = "결제 요청", description = "결제를 요청합니다.")
+    @ApiResponse(responseCode = "200", description = "결제 요청 성공")
     @RoleCheck({UserRoleEnum.CUSTOMER})
     @CurrentUserInject
     @GetMapping("/request") // http://localhost:8080/api/payment/confirm
@@ -85,16 +84,16 @@ public class PaymentController {
         return ResponseEntity.ok().body(paymentInfoOne);
     }
 
-    // 결제 취소는 오직 CUSTOMER만 가능
+    // 결제 취소는 결재했던 유저인 CUSTOMER만 가능
     @Operation(summary = "결제 취소", description = "결제를 취소합니다.")
     @ApiResponse(responseCode = "200", description = "결제 취소 성공")
     @CurrentUserInject
     @RoleCheck({UserRoleEnum.CUSTOMER})
-    @PutMapping("/cancel")
+    @PatchMapping("/cancel")
     public ResponseEntity<?> cancelPayment(
             @Parameter(description = "결제 ID(UUID)", required = true)
             @RequestParam UUID paymentUUID,
-            @CurrentUser @Parameter(hidden = true) UserContext userContext) // user 를 받아옴
+            @CurrentUser @Parameter(hidden = true) UserContext userContext) throws AccessDeniedException // user 를 받아옴
     {
         log.info("api/payment/cancel - PUT");
         PaymentResponseDto cancelPaymentInfo = paymentService.cancel(userContext, paymentUUID);
@@ -104,7 +103,17 @@ public class PaymentController {
         return ResponseEntity.ok().body(response);
     }
 
+    @Operation(summary = "결제 내역 숨김", description = "결제 내역을 숨김처리 합니다.")
+    @ApiResponse(responseCode = "200", description = "결제 내역 숨김 성공")
+    @CurrentUserInject
+    @RoleCheck({UserRoleEnum.CUSTOMER})
+    @PatchMapping("/hide")
+    public ResponseEntity<?> hidePayment(@CurrentUser @Parameter(hidden = true) UserContext userContext,
+                                         @Parameter(description = "결제 ID(UUID)", required = true)
+                                         @RequestParam UUID paymentUUID) throws AccessDeniedException {
+        log.info("api/payment/hide - GET");
 
-
-
+        PaymentResponseDto paymentResponseDto = paymentService.hidePayment(userContext, paymentUUID);
+        return ResponseEntity.ok().body(paymentResponseDto);
+    }
 }

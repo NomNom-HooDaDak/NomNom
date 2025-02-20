@@ -59,6 +59,8 @@ public class Payment extends BaseEntity {
     @JoinColumn(name = "order_id", nullable = false, unique = true)
     private Order order;
 
+    private boolean isDeleted = false;
+
     public void createPaymentKey() {
         this.paymentKey = UUID.randomUUID();
     }

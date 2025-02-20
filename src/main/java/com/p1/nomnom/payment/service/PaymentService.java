@@ -108,17 +108,38 @@ public class PaymentService {
     }
 
     @Transactional
-    public PaymentResponseDto cancel(UserContext userContext, UUID paymentUUID) {
+    public PaymentResponseDto cancel(UserContext userContext, UUID paymentUUID) throws AccessDeniedException {
         Payment findPayment = paymentRepository.findById(paymentUUID)
-                .orElseThrow(() -> new IllegalArgumentException("조회하신 결제 내역이 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("조회하신 결제 내역이 존재하지 않습니다."));
 
         if (!findPayment.getUserId().equals(userContext.getUserId())) {
-            throw new SecurityException("결제 내역을 조회할 권한이 없습니다.");
+            throw new AccessDeniedException("결제 내역을 조회할 권한이 없습니다.");
         }
+
         findPayment.setStatus(Payment.Status.FAIL);
         findPayment.setDeletedBy(userContext.getUsername());
 
         Payment cancelPayment = paymentRepository.save(findPayment);
         return new PaymentResponseDto(cancelPayment);
+    }
+
+    // 결제 내역 숨김 처리
+    @Transactional
+    public PaymentResponseDto hidePayment(UserContext userContext, UUID paymentUUID) throws AccessDeniedException {
+
+        User user = userContext.getUser();
+
+        Payment findPayment = paymentRepository.findById(paymentUUID)
+                .orElseThrow(() -> new EntityNotFoundException("조회하신 결제 내역이 존재하지 않습니다."));
+
+        if (!findPayment.getUserId().equals(user.getId())) {
+            throw new AccessDeniedException("결제 내역 접근 권한이 없습니다.");
+        }
+
+        findPayment.markAsDeleted(user.getUsername());
+        findPayment.setDeleted(true);
+
+        Payment saved = paymentRepository.save(findPayment);
+        return new PaymentResponseDto(saved);
     }
 }

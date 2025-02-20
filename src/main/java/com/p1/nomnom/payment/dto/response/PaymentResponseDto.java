@@ -35,6 +35,9 @@ public class PaymentResponseDto {
     // private UUID storeId;
     private String storeName;
 
+    // 숨김 처리 여부
+    private boolean isDeleted = false;
+
     public PaymentResponseDto(Payment payment) {
         this.paymentMethod = payment.getMethod();
         this.status = payment.getStatus();
@@ -44,6 +47,7 @@ public class PaymentResponseDto {
         this.orderItemList = customOrderItemList(payment.getOrder().getOrderItems());
         // this.storeId = payment.getStore().getId();
         this.storeName = payment.getStore().getName();
+        this.isDeleted = payment.isDeleted();
     }
 
     private List<PaymentInfoOrderItemResponseDto> customOrderItemList(List<OrderItem> orderItems) {
