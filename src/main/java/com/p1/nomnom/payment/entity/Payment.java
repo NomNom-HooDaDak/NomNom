@@ -23,14 +23,12 @@ public class Payment extends BaseEntity {
         CARD, CHECK
     }
 
-    //    Method 가 현금인 경우 아예 DONE 처리
-    //    Method 가 카드인 경우 FAIL, SUCCESS 로 처리
     @ToString
     public enum Status{
-        PROGRESS,
         FAIL,
         SUCCESS
     }
+
     // 주문테이블에 주문데이터가 먼저들어오고
     // 주문데이터를 가지고 결제를 진행할 겁니다.
     @Id
