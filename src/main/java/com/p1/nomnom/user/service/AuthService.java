@@ -2,8 +2,9 @@ package com.p1.nomnom.user.service;
 
 import com.p1.nomnom.security.jwt.JwtUtil;
 import com.p1.nomnom.user.dto.LoginRequestDto;
+import com.p1.nomnom.user.dto.LoginResponseDto;
 import com.p1.nomnom.user.dto.SignupRequestDto;
-import com.p1.nomnom.user.entity.RefreshToken;
+import com.p1.nomnom.user.dto.SignupResponseDto;
 import com.p1.nomnom.user.entity.User;
 import com.p1.nomnom.user.entity.UserRoleEnum;
 import com.p1.nomnom.user.repository.RefreshTokenRepository;
@@ -12,13 +13,12 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -36,12 +36,12 @@ public class AuthService {
 
     // 회원가입
     @Transactional
-    public void signup(SignupRequestDto requestDto) {
+    public SignupResponseDto signup(SignupRequestDto requestDto) {
         if (userRepository.findByUsername(requestDto.getUsername()).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 사용자입니다.");
         }
 
-        UserRoleEnum role = requestDto.getAdminCode() != null && requestDto.getAdminCode().equals(ADMIN_CODE)
+        UserRoleEnum role = (requestDto.getAdminCode() != null && requestDto.getAdminCode().equals(ADMIN_CODE))
                 ? UserRoleEnum.MASTER
                 : UserRoleEnum.CUSTOMER;
 
@@ -54,20 +54,40 @@ public class AuthService {
                 false
         );
         userRepository.save(user);
+
+        return new SignupResponseDto(user.getUsername(), "회원가입이 완료되었습니다.");
     }
 
     // 로그인
     @Transactional
-    public String login(LoginRequestDto requestDto) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(requestDto.getUsername(), requestDto.getPassword())
-        );
+    public LoginResponseDto login(LoginRequestDto requestDto) {
+        log.info("AuthService - 로그인 진행 중: username={}", requestDto.getUsername());
 
-        User user = userRepository.findByUsername(requestDto.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(requestDto.getUsername(), requestDto.getPassword())
+            );
+            log.info("인증 성공: {}", authentication.getName());
 
-        return jwtUtil.createAccessToken(user.getUsername(), user.getRole());
+            User user = userRepository.findByUsername(requestDto.getUsername())
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자"));
+
+            log.info("AccessToken 생성 시작...");
+            String accessToken = jwtUtil.createAccessToken(user.getUsername(), user.getRole());
+            log.info("AccessToken 생성 완료: {}", accessToken);
+
+            log.info("RefreshToken 생성 시작...");
+            String refreshToken = generateAndSaveRefreshToken(user.getUsername());
+            log.info("RefreshToken 생성 완료: {}", refreshToken);
+
+            return new LoginResponseDto(accessToken, refreshToken, "로그인이 성공적으로 완료되었습니다.");
+        } catch (Exception e) {
+            log.error("로그인 실패: {}", e.getMessage(), e);
+            throw new RuntimeException("로그인 인증 과정에서 문제가 발생했습니다.", e);
+        }
     }
+
+
 
     // RefreshToken 생성 및 저장
     @Transactional
@@ -83,5 +103,4 @@ public class AuthService {
     public String refreshAccessToken(String refreshToken) {
         return jwtUtil.refreshAccessToken(refreshToken);
     }
-
 }

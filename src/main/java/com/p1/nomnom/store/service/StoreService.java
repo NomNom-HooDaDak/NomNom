@@ -31,5 +31,8 @@ public interface StoreService {
 
     // 가게 복구 처리
     StoreResponseDTO restoreStore(UUID storeId);
+
+    // feature_ai 추가부분
+    String getStoreNameById(UUID storeId);
 }
 

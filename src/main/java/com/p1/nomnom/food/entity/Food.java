@@ -3,6 +3,7 @@ package com.p1.nomnom.food.entity;
 import com.p1.nomnom.common.entity.BaseEntity;
 import com.p1.nomnom.food.dto.request.FoodRequestDto;
 import com.p1.nomnom.store.entity.Store;
+import com.p1.nomnom.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,9 @@ public class Food extends BaseEntity {
     private Store store; // Store 고유 id, Store Entity의 pk를 참조하는 외래 키
     // private String storeId;
 
+    @Column(name="user_id", nullable = false)
+    private Long userId;
+
     @Column(nullable = false) // 음식명 컬럼에 null을 허용하지 않음
     private String name; // 음식명
 
@@ -49,28 +53,33 @@ public class Food extends BaseEntity {
 
     public Food(Store store, FoodRequestDto requestDto) {
         this.store = store;
+        this.userId = getUserFromStore(store).getId();
         this.name = requestDto.getName();
         this.description = requestDto.getDescription();
         this.price = requestDto.getPrice();
         this.image = requestDto.getImage();
     }
 
+    private User getUserFromStore(Store store) {
+        return store.getUser();
+    }
+
     // 음식 메뉴 숨김 처리 ( 삭제 처리 )
-    public void hide(String deletedBy) {
+    public void hide() {
         hidden = true;
         this.deletedAt = LocalDateTime.now();
-        this.markAsDeleted(deletedBy);
+        this.markAsDeleted(getUserFromStore(this.store).getUsername());
     }
 
     // 업데이트한 사람과 일자 업데이트 하는 메서드
-    public void updateBy(String updateBy) {
+    public void updateBy() {
         this.setUpdatedAt(LocalDateTime.now());
-        this.setUpdatedBy(updateBy);
+        this.setUpdatedBy(getUserFromStore(this.store).getUsername());
     }
 
     // 생성할 때 ( 처음 값 그대로 감)
-    public void createBy(String createBy) {
-        this.setCreatedBy(createBy);
+    public void createBy() {
+        this.setCreatedBy(getUserFromStore(this.store).getUsername());
         this.setCreatedAt(LocalDateTime.now());
     }
 }
