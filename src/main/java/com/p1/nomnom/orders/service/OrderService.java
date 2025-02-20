@@ -1,4 +1,5 @@
 package com.p1.nomnom.orders.service;
+import com.p1.nomnom.common.aop.UserContext;
 import com.p1.nomnom.user.entity.UserRoleEnum;
 
 
@@ -26,22 +27,14 @@ import java.util.UUID;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemService orderItemService;
+    private final UserRepository userRepository;
 
     // 주문 등록
     @Transactional
-    public OrderResponseDto createOrder(User currentUser, OrderRequestDto orderRequestDto) {
-        if (currentUser == null) {
-            throw new IllegalArgumentException("User is null");
-        }
-        System.out.println("Current user: " + currentUser.getUsername());
-
-        if (currentUser.getRole() != UserRoleEnum.CUSTOMER) {
-            throw new IllegalArgumentException("일반 사용자만 주문할 수 있습니다.");
-        }
-
+    public OrderResponseDto createOrder(UserContext userContext, OrderRequestDto orderRequestDto) {
         Order order = Order.create(
                 orderRequestDto.getStoreId(),
-                currentUser,
+                userContext.getUser(),
                 orderRequestDto.getPhone(),
                 orderRequestDto.getAddressId(),
                 orderRequestDto.getRequest()
@@ -62,15 +55,15 @@ public class OrderService {
 
     // ✅ 특정 주문 조회
     @Transactional(readOnly = true)
-    public OrderResponseDto getOrder(UUID orderId, User currentUser) {
+    public OrderResponseDto getOrder(UUID orderId, UserContext userContext) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
 
-        if (currentUser.getRole() == UserRoleEnum.CUSTOMER && !order.getUser().getId().equals(currentUser.getId())) {
+        if (userContext.getRole() == UserRoleEnum.CUSTOMER && !order.getUser().getId().equals(userContext.getUserId())) {
             throw new IllegalArgumentException("본인이 주문한 것만 조회할 수 있습니다.");
         }
 
-        if (currentUser.getRole() == UserRoleEnum.OWNER && !order.getStoreId().equals(currentUser.getId())) {
+        if (userContext.getRole() == UserRoleEnum.OWNER && !order.getStoreId().equals(userContext.getUserId())) {
             throw new IllegalArgumentException("가게 주인은 해당 가게의 주문만 조회할 수 있습니다.");
         }
 
@@ -79,40 +72,40 @@ public class OrderService {
 
     // ✅ 주문 리스트 조회
     @Transactional(readOnly = true)
-    public Page<OrderResponseDto> getOrders(User currentUser, Pageable pageable) {
-        if (currentUser.getRole() == UserRoleEnum.MASTER || currentUser.getRole() == UserRoleEnum.MANAGER) {
+    public Page<OrderResponseDto> getOrders(UserContext userContext, Pageable pageable) {
+        if (userContext.getRole() == UserRoleEnum.MASTER || userContext.getRole() == UserRoleEnum.MANAGER) {
             return orderRepository.findAll(pageable).map(OrderResponseDto::from);
         }
 
-        if (currentUser.getRole() == UserRoleEnum.OWNER) {
-            return orderRepository.findByStoreIdOrderByCreatedAtDesc(currentUser.getId(), pageable)
+        if (userContext.getRole() == UserRoleEnum.OWNER) {
+            return orderRepository.findByStoreIdOrderByCreatedAtDesc(userContext.getUserId(), pageable)
                     .map(OrderResponseDto::from);
         }
 
         // CUSTOMER는 자신이 주문한 것만 조회
-        return orderRepository.findByUserIdOrderByCreatedAtDesc(currentUser.getId(), pageable)
+        return orderRepository.findByUserIdOrderByCreatedAtDesc(userContext.getUserId(), pageable)
                 .map(OrderResponseDto::from);
     }
 
     // ✅ 주문 취소
     @Transactional
-    public void cancelOrder(UUID orderId, User currentUser) {
+    public void cancelOrder(UUID orderId, UserContext userContext) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
 
-        if (currentUser.getRole() == UserRoleEnum.CUSTOMER) {
-            if (!order.getUser().getId().equals(currentUser.getId())) {
+        if (userContext.getRole() == UserRoleEnum.CUSTOMER) {
+            if (!order.getUser().getId().equals(userContext.getUserId())) {
                 throw new IllegalArgumentException("본인이 주문한 것만 취소할 수 있습니다.");
             }
         }
 
-        if (currentUser.getRole() == UserRoleEnum.OWNER) {
-            if (!order.getStoreId().equals(currentUser.getId())) {
+        if (userContext.getRole() == UserRoleEnum.OWNER) {
+            if (!order.getStoreId().equals(userContext.getUserId())) {
                 throw new IllegalArgumentException("가게 주인은 본인 가게의 주문만 취소할 수 있습니다.");
             }
         }
 
-        order.cancel(currentUser.getUsername());
+        order.cancel(userContext.getUsername());
 
         orderRepository.save(order);
     }
