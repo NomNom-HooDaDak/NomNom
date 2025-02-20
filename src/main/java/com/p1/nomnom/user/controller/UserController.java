@@ -4,6 +4,7 @@ import com.p1.nomnom.security.jwt.JwtUtil;
 import com.p1.nomnom.user.dto.LoginRequestDto;
 import com.p1.nomnom.user.dto.LoginResponseDto;
 import com.p1.nomnom.user.dto.SignupRequestDto;
+import com.p1.nomnom.user.dto.SignupResponseDto;
 import com.p1.nomnom.user.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,29 +26,36 @@ public class UserController {
 
     // 회원가입 API (ADMIN 코드 포함)
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@Valid @RequestBody SignupRequestDto requestDto) {
-        authService.signup(requestDto);
+    public ResponseEntity<SignupResponseDto> signup(@Valid @RequestBody SignupRequestDto requestDto) {
+        SignupResponseDto responseDto = authService.signup(requestDto);
         log.info("회원가입 완료: username={}, email={}", requestDto.getUsername(), requestDto.getEmail());
-        return ResponseEntity.status(HttpStatus.CREATED).body("회원가입이 완료되었습니다.");
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     // 로그인 API (AccessToken & RefreshToken 발급)
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
-        log.info("로그인 시도: username={}", requestDto.getUsername());
+        log.info("UserController - 로그인 API 호출됨: username={}", requestDto.getUsername());
 
-        String accessToken = authService.login(requestDto);
-        String refreshToken = authService.generateAndSaveRefreshToken(requestDto.getUsername());
+        try {
+            LoginResponseDto loginResponse = authService.login(requestDto);
 
-        log.info("로그인 성공: username={}", requestDto.getUsername());
-        log.info("AccessToken: {}", accessToken);
-        log.info("RefreshToken: {}", refreshToken);
+            log.info("AccessToken: {}", loginResponse.getAccessToken());
+            log.info("RefreshToken: {}", loginResponse.getRefreshToken());
 
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
-        response.addHeader(JwtUtil.REFRESH_TOKEN_HEADER, refreshToken);
+            response.addHeader(JwtUtil.AUTHORIZATION_HEADER, loginResponse.getAccessToken());
+            response.addHeader(JwtUtil.REFRESH_TOKEN_HEADER, loginResponse.getRefreshToken());
 
-        return ResponseEntity.ok(new LoginResponseDto(accessToken, refreshToken, "로그인 성공!"));
+            log.info("로그인 성공 - Response 반환 준비 완료");
+            return ResponseEntity.ok(loginResponse);
+        } catch (Exception e) {
+            log.error("로그인 중 오류 발생: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new LoginResponseDto(null, null, "로그인 실패: " + e.getMessage()));
+        }
     }
+
+
 
     // AccessToken 재발급 API
     @PostMapping("/token/refresh")

@@ -41,12 +41,12 @@ public class RoleCheckAspect {
         UserRoleEnum userRole = user.getRole();
         for (UserRoleEnum requiredRole : roleCheck.value()) {
             if (userRole == requiredRole) {
-                log.info("✅ 접근 허용: {} (요구 역할: {})", userRole, requiredRole);
+                log.info("접근 허용: {} (요구 역할: {})", userRole, requiredRole);
                 return joinPoint.proceed(); // 역할이 맞으면 API 실행
             }
         }
 
-        log.warn("⛔ 접근 거부: {} (요구 역할: {})", userRole, roleCheck.value());
+        log.warn("접근 거부: {} (요구 역할: {})", userRole, roleCheck.value());
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "접근 권한이 없습니다.");
     }
 }

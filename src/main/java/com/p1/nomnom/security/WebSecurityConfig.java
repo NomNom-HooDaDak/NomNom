@@ -40,22 +40,8 @@ public class WebSecurityConfig {
 
     // AuthenticationManager 설정
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
-    }
-
-    // 로그인 요청 시 인증 필터
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, refreshTokenRepository);
-        filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
-        return filter;
-    }
-
-    // JWT 토큰 검증 필터
-    @Bean
-    public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, refreshTokenRepository);
+    public AuthenticationManager authenticationManager() throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     // Spring Security 설정
@@ -87,9 +73,12 @@ public class WebSecurityConfig {
             return config;
         }));
 
-        // JWT 필터 추가 (Authorization -> Authentication 순서)
-        http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(jwtAuthenticationFilter(), JwtAuthorizationFilter.class);
+        // 필터 설정
+        http.addFilterBefore(new JwtAuthenticationFilter(authenticationManager(), jwtUtil, refreshTokenRepository),
+                UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthorizationFilter(jwtUtil, userDetailsService, refreshTokenRepository),
+                UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }
