@@ -2,6 +2,7 @@ package com.p1.nomnom.store.service;
 
 import com.p1.nomnom.category.entity.Category;
 import com.p1.nomnom.category.repository.CategoryRepository;
+import com.p1.nomnom.security.aop.UserContext;
 import com.p1.nomnom.store.dto.request.StoreRequestDTO;
 import com.p1.nomnom.store.dto.response.StoreResponseDTO;
 import com.p1.nomnom.store.entity.Store;
@@ -50,14 +51,14 @@ public class StoreServiceImpl implements StoreService {
     // 가게 등록
     @Override
     @Transactional
-    public StoreResponseDTO createStore(StoreRequestDTO storeRequestDTO) {
+    public StoreResponseDTO createStore(StoreRequestDTO storeRequestDTO, UserContext userContext) {
         // 카테고리 확인
         Category category = categoryRepository.findById(storeRequestDTO.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("카테고리가 존재하지 않습니다."));
 
         // 사용자 정보 입력 받기 (예: 가게 사장 이름 입력)
-        User user = new User();
-        user.setId(storeRequestDTO.getUserId()); // 사용자 ID가 입력됨
+//        User user = new User();
+//        user.setId(storeRequestDTO.getUserId()); // 사용자 ID가 입력됨
 
         // 가게 생성
         Store store = new Store();
@@ -67,7 +68,9 @@ public class StoreServiceImpl implements StoreService {
         store.setOpenTime(storeRequestDTO.getOpenTime());
         store.setCloseTime(storeRequestDTO.getCloseTime());
         store.setCategory(category);
-        store.setUser(user); // 직접 입력 받은 User 객체 설정
+        store.setUser(userContext.getUser()); // 직접 입력 받은 User 객체 설정
+
+        store.setCreatedBy(userContext.getUsername());
 
         storeRepository.save(store);
 
@@ -80,7 +83,7 @@ public class StoreServiceImpl implements StoreService {
     // 가게 정보 수정
     @Override
     @Transactional
-    public StoreResponseDTO updateStore(UUID storeId, StoreRequestDTO storeRequestDTO) {
+    public StoreResponseDTO updateStore(UUID storeId, StoreRequestDTO storeRequestDTO, UserContext userContext) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("가게가 존재하지 않습니다."));
 
@@ -88,8 +91,8 @@ public class StoreServiceImpl implements StoreService {
                 .orElseThrow(() -> new IllegalArgumentException("카테고리가 존재하지 않습니다."));
 
         // 사용자 정보 직접 설정 (예: 가게 사장 이름 입력)
-        User user = new User();
-        user.setId(storeRequestDTO.getUserId()); // 사용자 ID가 입력됨
+//        User user = new User();
+//        user.setId(storeRequestDTO.getUserId()); // 사용자 ID가 입력됨
 
         store.setName(storeRequestDTO.getName());
         store.setAddress(storeRequestDTO.getAddress());
@@ -97,7 +100,9 @@ public class StoreServiceImpl implements StoreService {
         store.setOpenTime(storeRequestDTO.getOpenTime());
         store.setCloseTime(storeRequestDTO.getCloseTime());
         store.setCategory(category);
-        store.setUser(user); // 직접 입력 받은 User 객체 설정
+        store.setUser(userContext.getUser()); // 직접 입력 받은 User 객체 설정
+
+        store.setCreatedBy(userContext.getUsername());
 
         storeRepository.save(store);
 
@@ -112,6 +117,8 @@ public class StoreServiceImpl implements StoreService {
     public StoreResponseDTO getStore(UUID storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("가게가 존재하지 않습니다."));
+
+
 
         // 응답 DTO 반환
         return new StoreResponseDTO(store.getId(), store.getName(), store.getAddress(),
@@ -148,10 +155,10 @@ public class StoreServiceImpl implements StoreService {
     // 가게 숨김 처리
     @Override
     @Transactional
-    public StoreResponseDTO hideStore(UUID storeId) {
+    public StoreResponseDTO hideStore(UUID storeId, UserContext userContext) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("가게가 존재하지 않습니다."));
-        store.hide("관리자");  // 가게 숨김 처리
+        store.hide(userContext.getUsername());  // 가게 숨김 처리
         storeRepository.save(store);
 
         // 숨김 처리된 가게의 모든 정보를 반환
@@ -162,12 +169,12 @@ public class StoreServiceImpl implements StoreService {
     //가게 복구
     @Override
     @Transactional
-    public StoreResponseDTO restoreStore(UUID storeId) {
+    public StoreResponseDTO restoreStore(UUID storeId, UserContext userContext) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("가게가 존재하지 않습니다."));
 
         // 가게 복구 처리
-        store.restoreStore("관리자"); // 복구 작업
+        store.restoreStore(userContext.getUsername()); // 복구 작업
         storeRepository.save(store);
 
         // 복구된 가게의 모든 정보를 반환
