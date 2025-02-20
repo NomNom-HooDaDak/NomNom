@@ -1,13 +1,12 @@
 package com.p1.nomnom.reviews.controller;
 
-import com.p1.nomnom.common.aop.CurrentUser;
-import com.p1.nomnom.common.aop.CurrentUserInject;
-import com.p1.nomnom.common.aop.UserContext;
+import com.p1.nomnom.security.aop.CurrentUser;
+import com.p1.nomnom.security.aop.CurrentUserInject;
+import com.p1.nomnom.security.aop.UserContext;
 import com.p1.nomnom.reviews.dto.request.ReviewRequestDto;
 import com.p1.nomnom.reviews.dto.response.ReviewResponseDto;
 import com.p1.nomnom.reviews.service.ReviewService;
 import com.p1.nomnom.security.aop.RoleCheck;
-import com.p1.nomnom.user.entity.User;
 import com.p1.nomnom.user.entity.UserRoleEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,7 +16,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

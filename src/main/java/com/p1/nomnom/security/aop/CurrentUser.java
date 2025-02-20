@@ -1,4 +1,4 @@
-package com.p1.nomnom.common.aop;
+package com.p1.nomnom.security.aop;
 
 
 import java.lang.annotation.ElementType;

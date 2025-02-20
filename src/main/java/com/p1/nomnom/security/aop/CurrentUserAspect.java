@@ -1,7 +1,6 @@
-package com.p1.nomnom.common.aop;
+package com.p1.nomnom.security.aop;
 
 import com.p1.nomnom.user.entity.User;
-import com.p1.nomnom.user.entity.UserRoleEnum;
 import com.p1.nomnom.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,7 @@ public class CurrentUserAspect {
 
     private final UserRepository userRepository;
 
-    @Around("@annotation(com.p1.nomnom.common.aop.CurrentUserInject) && execution(* *(.., @CurrentUser (*), ..))")
+    @Around("@annotation(com.p1.nomnom.security.aop.CurrentUserInject) && execution(* *(.., @com.p1.nomnom.security.aop.CurrentUser (*), ..))")
     public Object injectCurrentUser(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
         for (int i = 0; i < args.length; i++) {

@@ -1,4 +1,4 @@
-package com.p1.nomnom.util;
+package com.p1.nomnom.common.util;
 
 import com.p1.nomnom.security.jwt.JwtUtil;
 import com.p1.nomnom.user.entity.RefreshToken;
@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,6 @@
 package com.p1.nomnom.reviews.service;
 
-import com.p1.nomnom.common.aop.UserContext;
+import com.p1.nomnom.security.aop.UserContext;
 import com.p1.nomnom.orders.service.OrderService;
 import com.p1.nomnom.reviewImages.entity.ReviewImage;
 import com.p1.nomnom.reviewImages.service.ReviewImageService;
@@ -8,7 +8,6 @@ import com.p1.nomnom.reviews.dto.request.ReviewRequestDto;
 import com.p1.nomnom.reviews.dto.response.ReviewResponseDto;
 import com.p1.nomnom.reviews.entity.Review;
 import com.p1.nomnom.reviews.repository.ReviewRepository;
-import com.p1.nomnom.user.entity.User;
 import com.p1.nomnom.user.entity.UserRoleEnum;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

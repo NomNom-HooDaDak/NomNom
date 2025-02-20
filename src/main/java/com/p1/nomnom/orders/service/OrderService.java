@@ -1,7 +1,7 @@
 package com.p1.nomnom.orders.service;
 
 import com.p1.nomnom.orders.entity.Status;
-import com.p1.nomnom.common.aop.UserContext;
+import com.p1.nomnom.security.aop.UserContext;
 import com.p1.nomnom.user.entity.UserRoleEnum;
 import com.p1.nomnom.orderItems.entity.OrderItem;
 import com.p1.nomnom.orderItems.service.OrderItemService;
@@ -9,7 +9,6 @@ import com.p1.nomnom.orders.dto.request.OrderRequestDto;
 import com.p1.nomnom.orders.dto.response.OrderResponseDto;
 import com.p1.nomnom.orders.entity.Order;
 import com.p1.nomnom.orders.repository.OrderRepository;
-import com.p1.nomnom.user.entity.User;
 import com.p1.nomnom.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

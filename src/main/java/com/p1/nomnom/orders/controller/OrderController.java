@@ -1,8 +1,8 @@
 package com.p1.nomnom.orders.controller;
 
-import com.p1.nomnom.common.aop.CurrentUser;
-import com.p1.nomnom.common.aop.CurrentUserInject;
-import com.p1.nomnom.common.aop.UserContext;
+import com.p1.nomnom.security.aop.CurrentUser;
+import com.p1.nomnom.security.aop.CurrentUserInject;
+import com.p1.nomnom.security.aop.UserContext;
 import com.p1.nomnom.orders.dto.request.OrderRequestDto;
 import com.p1.nomnom.orders.dto.response.OrderResponseDto;
 import com.p1.nomnom.orders.service.OrderService;
