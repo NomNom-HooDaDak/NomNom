@@ -48,7 +48,7 @@ public class OrderResponseDto {
     @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
     public static class OrderItemDto {
         private String foodName;
-        private int price;
+        private Long price;
         private int quantity;
 
         public static OrderItemDto from(OrderItem orderItem) {

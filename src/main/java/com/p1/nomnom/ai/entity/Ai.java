@@ -1,88 +1,62 @@
 package com.p1.nomnom.ai.entity;
 
+import com.p1.nomnom.common.entity.BaseEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+
 import java.util.UUID;
 
+//@RequiredArgsConstructor
+@Getter
 @Entity
+@Builder
+@AllArgsConstructor  //Builder패턴 생성자 추가
+@NoArgsConstructor// ombok의 @NoArgsConstructor(force = true)를 사용하면 final 필드가 있을 때도 강제로 기본 생성자를 추가해 오류를 방지
+
 @Table(name = "p_ai")
-public class Ai {
+public class Ai extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(name = "question", nullable = false, length = 255)
+    @Column(name = "question", nullable = false, columnDefinition = "TEXT")
+    @Size(max = 500, message = "질문은 최대 500자까지 입력 가능합니다.")
     private String question;
 
-    @Column(name = "answer", nullable = false, length = 255)
+    @Column(name = "answer", nullable = false, columnDefinition = "TEXT")
+    @Size(max = 255, message = "답변은 최대 255자까지 입력 가능합니다.")
     private String answer;
 
-    @Column(name = "food_name", nullable = false, length = 255)
+    @Column(name = "food_name", nullable = false, columnDefinition = "TEXT")
     private String foodName;
 
-    @Column(name = "store_id", nullable = false)
+    @Column(name = "store_id")
     private UUID storeId;
 
-    @Column(name = "description_hint", length = 255)
+    @Column(name = "description_hint", columnDefinition = "TEXT")
     private String descriptionHint;
 
-    @Column(name = "keyword", length = 255)
+    @Column(name = "keyword", columnDefinition = "TEXT")
     private String keyword;
 
-    // Getters and Setters
-    public UUID getId() {
-        return id;
+    @Builder.Default
+    @Column(name = "hidden", nullable = false)
+    private Boolean hidden = false;
+
+    @Column(name = "generated_description", columnDefinition = "TEXT")
+    private String generatedDescription;  // AI에서 받은 원본 JSON
+
+    //AI 응답 숨김 처리 (BaseEntity 기능 활용)
+    public void hide(String deletedBy) {
+        this.hidden = true;  // 숨김 처리 활성화
+        this.markAsDeleted(deletedBy); // BaseEntity의 삭제 관리 메서드 호출
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(String question) {
-        this.question = question;
-    }
-
-    public String getAnswer() {
-        return answer;
-    }
-
-    public void setAnswer(String answer) {
-        this.answer = answer;
-    }
-
-    public String getFoodName() {
-        return foodName;
-    }
-
-    public void setFoodName(String foodName) {
-        this.foodName = foodName;
-    }
-
-    public UUID getStoreId() {
-        return storeId;
-    }
-
-    public void setStoreId(UUID storeId) {
-        this.storeId = storeId;
-    }
-
-    public String getDescriptionHint() {
-        return descriptionHint;
-    }
-
-    public void setDescriptionHint(String descriptionHint) {
-        this.descriptionHint = descriptionHint;
-    }
-
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
+    //AI 응답 복구 처리 (BaseEntity 기능 활용)
+    public void restore(String updatedBy) {
+        this.hidden = false;  // 숨김 처리 해제
+        this.unhide(updatedBy); // BaseEntity의 복구 관리 메서드 호출
     }
 }

@@ -23,22 +23,22 @@ public abstract class BaseEntity {
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     @Comment("생성일")
-    private LocalDateTime createdAt;
+    protected LocalDateTime createdAt;
 
     @CreatedBy
     @Column(name = "created_by", updatable = false)
     @Comment("생성자")
-    private String createdBy;
+    protected String createdBy;
 
     @LastModifiedDate
     @Column(name = "updated_at")
     @Comment("수정일")
-    private LocalDateTime updatedAt;
+    protected LocalDateTime updatedAt;
 
     @LastModifiedBy
     @Column(name = "updated_by")
     @Comment("수정자")
-    private String updatedBy;
+    protected String updatedBy;
 
     @Column(name = "deleted_at")
     @Comment("삭제일")
@@ -61,4 +61,5 @@ public abstract class BaseEntity {
         this.updatedAt = LocalDateTime.now(); // 수정일을 현재 시간으로 설정
         this.updatedBy = updatedBy; // 수정자를 지정한 값으로 설정
     }
+
 }

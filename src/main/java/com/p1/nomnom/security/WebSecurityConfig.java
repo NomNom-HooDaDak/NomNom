@@ -23,14 +23,14 @@ import org.springframework.web.cors.CorsConfiguration;
 import java.util.List;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity // Spring Security 활성화
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     // 비밀번호 암호화 설정
     @Bean
@@ -47,21 +47,24 @@ public class WebSecurityConfig {
     // Spring Security 설정
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable()); // CSRF 비활성화 (JWT 사용 시 필수)
-        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // 세션 비활성화
+        http.csrf(csrf -> csrf.disable()); // CSRF 비활성화 (JWT 방식 사용)
+
+        // 세션 관리 - STATELESS 모드 (JWT 사용 시 필수)
+        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         // 권한 설정
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // 정적 리소스 접근 허용
                 .requestMatchers("/api/user/login", "/api/user/signup", "/api/user/token/refresh").permitAll()
-                .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
-                .requestMatchers("/api/owner/**").hasRole("OWNER")
-                .requestMatchers("/api/manager/**").hasRole("MANAGER")
-                .requestMatchers("/api/master/**").hasRole("MASTER")
-                .anyRequest().authenticated()
+                .requestMatchers("/api/customer/**").hasRole("CUSTOMER") // 고객 전용 API
+                .requestMatchers("/api/owner/**").hasRole("OWNER") // 가게 사장 전용 API
+                .requestMatchers("/api/manager/**").hasRole("MANAGER") // 관리자 전용 API
+                .requestMatchers("/api/master/**").hasRole("MASTER") // 최상위 관리자(ADMIN) 전용 API
+                .requestMatchers("/doc/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
         );
 
-        // CORS 설정
+        // CORS 설정 추가
         http.cors(cors -> cors.configurationSource(request -> {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowedOrigins(List.of("*"));
@@ -75,6 +78,7 @@ public class WebSecurityConfig {
                 UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(new JwtAuthorizationFilter(jwtUtil, userDetailsService, refreshTokenRepository),
                 UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }

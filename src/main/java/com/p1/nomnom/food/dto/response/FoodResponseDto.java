@@ -13,7 +13,7 @@ import lombok.ToString;
 public class FoodResponseDto {
     private String name;
     private String description;
-    private String price;
+    private Long price;
     private String image;
 
     public FoodResponseDto(Food food) {

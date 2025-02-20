@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -27,5 +28,10 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
 
     // 카테고리별로 모든 가게 조회
     Page<Store> findAllByCategoryId(UUID categoryId, Pageable pageable);
+
+    // feature_ai 추가부분 - 기본 제공이라 제거 가능
+    Optional<Store> findById(UUID storeId);
+
+
 
 }
