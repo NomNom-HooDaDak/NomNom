@@ -1,6 +1,7 @@
 package com.p1.nomnom.food.dto.request;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @Getter
@@ -9,6 +10,7 @@ public class FoodRequestDto {
     // private Store store;
     /* description(음식설명 필드)과 image 값은 필수가 아님 */
     private String name;
+    @Setter
     private String description;
     private Long price;
     // 일단 문자열 타입으로 받고,

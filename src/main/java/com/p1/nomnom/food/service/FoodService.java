@@ -5,27 +5,51 @@ import com.p1.nomnom.food.dto.request.FoodRequestDto;
 import com.p1.nomnom.food.dto.response.FoodResponseDto;
 import com.p1.nomnom.food.entity.Food;
 import com.p1.nomnom.food.repository.FoodRepository;
+import com.p1.nomnom.security.aop.UserContext;
 import com.p1.nomnom.store.entity.Store;
 import com.p1.nomnom.store.repository.StoreRepository;
+import com.p1.nomnom.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.AccessDeniedException;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j(topic="food service")
 public class FoodService {
     private final FoodRepository foodRepository;
     private final StoreRepository storeRepository;
+    private final AiService aiService;
 
     @Transactional
-    public FoodResponseDto createFood(Store store, FoodRequestDto requestDto) {
+    public FoodResponseDto createFood(UUID storeId, FoodRequestDto requestDto, UserContext userContext) {
 
          try {
-            Food food = new Food(store, requestDto);
-            food.createBy();
+             User user = userContext.getUser();
+             Store findStore = getFindStore(storeId); // 1. 가게 존재 여부를 확인
+             if(!(user.getId().equals(findStore.getUser().getId()))) { // 2. 가게 객체가 가리키는 userId
+                 // 현재 접속한 userid 와 상이하다면
+                 throw new AccessDeniedException("해당 가게의 주인이 아닌 사람은 음식 정보를 생성할 권한이 없습니다.");
+             }
+
+             // --> 음식 설명 서비스를 받았다면 데이터베이스에 저장되어 있을 것이다.
+             // 3. 해당 store 가게 아이디로 음식 설명 서비스를 받은 데이터 유무 확인
+
+             String getAnswer = aiService.findFirstAnswerByStoreAndFoodName(storeId, requestDto.getName());
+             log.info("ai 저장된 답변: {}", getAnswer);
+             if(!getAnswer.equals("1")) {
+                 requestDto.setDescription(getAnswer);
+             }
+
+             Food food = new Food(findStore, requestDto);
+             food.createBy();
             Food savedFood = foodRepository.save(food);
+            log.info("savedFood: {}", savedFood.toString());
+            log.info("ai가 적용된 {} 의 음식 설명: {}", savedFood.getName(), savedFood.getDescription());
             return new FoodResponseDto(savedFood);
          } catch(Exception e) {
              e.getStackTrace();
@@ -33,7 +57,7 @@ public class FoodService {
         }
     }
 
-    public List<FoodResponseDto> findAll(String storeId) {
+    public List<FoodResponseDto> findAll(UUID storeId) {
         // 1. Store 존재하는지 확인
         Store findStore = getFindStore(storeId);
         List<Food> allFoodListByStore = foodRepository.findAllFoodListByStore(findStore);
@@ -64,24 +88,21 @@ public class FoodService {
     }
 
     /* 가게가 존재하는지 확인하는 메서드 */
-    public Store getFindStore(String storeId) {
-        UUID uuid = UUID.fromString(storeId);
-
-        return storeRepository.findById(uuid).orElseThrow(() ->
+    public Store getFindStore(UUID storeId) {
+        return storeRepository.findById(storeId).orElseThrow(() ->
                 new IllegalArgumentException("가게가 존재하지 않습니다. 가게를 먼저 생성해주세요!")
         );
     }
 
     // 특정 가게의 특정 음식을 조회할 때
-    public FoodResponseDto findFood(String storeId, String foodId) {
+    public FoodResponseDto findFood(UUID storeId, UUID foodId) {
         // 1. Store 테이블에 storeId 가 존재하는지 확인한다.
         Store findStore = getFindStore(storeId);
 
         // 2. Store 객체와 food Id 를 전달하면서 특정 음식 데이터를 전달받기 join --> where f.food_id = foodId;
         // Food 객체를 얻기 위해 String 타입의 foodId 를 UUID 타입으로 바꾼후 findById 로 조회하기
-        UUID foodUUID = UUID.fromString(foodId);
-
-        Food food = foodRepository.findById(foodUUID).orElseThrow(()->
+        // --> 노놉 스프링이 알아서 변환해줌
+        Food food = foodRepository.findById(foodId).orElseThrow(()->
                 new IllegalArgumentException("잘못된 접근 경로입니다.")
         );
 
@@ -96,13 +117,12 @@ public class FoodService {
 
     @Transactional
     // 가게 주인이 (등록한) 특정 음식 정보를(상세 사항을) 변경할 때
-    public FoodResponseDto updateFoodInfo(String storeId, String foodId, FoodRequestDto updateRequestDto) {
+    public FoodResponseDto updateFoodInfo(UUID storeId, UUID foodId, FoodRequestDto updateRequestDto) {
         // 1. Store 테이블에 storeId 가 존재하는지 확인한다.
         Store findStore = getFindStore(storeId);
 
         // 2. foodId 로 Food 객체를 얻기
-        UUID foodUUID = UUID.fromString(foodId);
-        Food food = foodRepository.findById(foodUUID).orElseThrow(()->
+        Food food = foodRepository.findById(foodId).orElseThrow(()->
                 new IllegalArgumentException("잘못된 접근 경로입니다.")
         );
 
@@ -134,13 +154,12 @@ public class FoodService {
     }
 
     // 가게주인이 (등록되어 있는) 하나의 메뉴를 삭제하는 기능
-    public FoodResponseDto hideOneMenu(String storeId, String foodId) {
+    public FoodResponseDto hideOneMenu(UUID storeId, UUID foodId) {
         // 1. Store 테이블에 storeId 가 존재하는지 확인한다.
         Store findStore = getFindStore(storeId);
 
         // 2. foodId 로 Food 객체를 얻기
-        UUID foodUUID = UUID.fromString(foodId);
-        Food food = foodRepository.findById(foodUUID).orElseThrow(()->
+        Food food = foodRepository.findById(foodId).orElseThrow(()->
                 new IllegalArgumentException("잘못된 접근 경로입니다.")
         );
 
