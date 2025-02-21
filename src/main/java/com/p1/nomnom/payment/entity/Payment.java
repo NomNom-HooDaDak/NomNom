@@ -1,5 +1,6 @@
 package com.p1.nomnom.payment.entity;
 
+import com.p1.nomnom.common.entity.BaseEntity;
 import com.p1.nomnom.orders.entity.Order;
 import com.p1.nomnom.store.entity.Store;
 import jakarta.persistence.*;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -15,45 +17,63 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Payment { // 기본 엔터티 만들어서 extends 할 예정
+public class Payment extends BaseEntity {
     @ToString
-    private enum Method {
+    public enum Method {
         CARD, CHECK
     }
 
-    //    Method 가 현금인 경우 아예 DONE 처리
-    //    Method 가 카드인 경우 FAIL, SUCCESS 로 처리
     @ToString
-    private enum Status {
-        PROGRESS,
+    public enum Status{
         FAIL,
         SUCCESS
     }
+
     // 주문테이블에 주문데이터가 먼저들어오고
     // 주문데이터를 가지고 결제를 진행할 겁니다.
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO) // auto_increment 설정
     private UUID id;
+
+    @Column(name="user_id", nullable = false)
+    private Long userId;
+
     // method =card > toss api > status = done, fail =>  status = fail
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Method method;
 
-    @Column(nullable = false)
+    @Column(name="status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
-    // private Order order; // order 테이블의 pk를 참조함
-    // order 테이블에 total_price 가 있어서 @OneToOne
-//    private String orderId;
+
     // 결제 식별 역할, 고유한, 빈 값 허용하지 않음
     @Column(unique = true, nullable = false)
-    private String paymentKey;
+    private UUID paymentKey;
 
     @ManyToOne
-    @JoinColumn(name = "store_id")  // DB에서는 store_id로 매핑
+    @JoinColumn(name = "store_id")
     private Store store;
 
     @OneToOne
     @JoinColumn(name = "order_id", nullable = false, unique = true)
     private Order order;
+
+    private boolean isDeleted = false;
+
+    public void createPaymentKey() {
+        this.paymentKey = UUID.randomUUID();
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+        this.createdAt = LocalDateTime.now();
+        this.createdBy = createdBy;
+    }
+
+    @Override
+    public void setDeletedBy(String deletedBy) {
+        this.deletedBy = deletedBy;
+        this.deletedAt = LocalDateTime.now();
+    }
 }

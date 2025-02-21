@@ -1,7 +1,7 @@
 -- ✅ 카테고리 추가
 INSERT INTO p_category (id, name, hidden)
 VALUES ('33333333-3333-3333-3333-333333333333', '한식', false)
-ON CONFLICT (id) DO NOTHING;
+    ON CONFLICT (id) DO NOTHING;
 
 -- ✅ 테스트 유저 추가
 INSERT INTO p_users (id, username, email, password, phone, role, is_deleted)
@@ -16,7 +16,7 @@ VALUES
     (8, 'testuser8', 'test8@email.com', '$2a$10$5MA.givZ3W4q0vQaBQixkOuSw12mOvmKKSmLFck3gZ8anbP5HpN3C', '01012345678', 'CUSTOMER', false),
     (9, 'testuser9', 'test9@email.com', '$2a$10$WzInLhOfrWInUXcRgMEpk.bDp1RiCN84asmZN6Nbu3tIKUWKW64dm', '01012345679', 'MANAGER', false),
     (10, 'adminuser', 'admin@email.com', '$2a$10$ZQblbHgZkNpqxyKhC0/VW.0vT/rv6I09y7ltgB2NNXL56dB.C0IFC', '01012345670', 'MASTER', false)
-ON CONFLICT (id) DO NOTHING;
+    ON CONFLICT (id) DO NOTHING;
 
 -- ✅ RefreshToken 추가
 INSERT INTO p_refreshtoken (username, refresh_token, expiry_date)
@@ -26,7 +26,6 @@ VALUES
     ('testuser3', 'refreshToken3', NOW() + INTERVAL '7 days'),
     ('testuser4', 'refreshToken4', NOW() + INTERVAL '7 days'),
     ('testuser5', 'refreshToken5', NOW() + INTERVAL '7 days')
-
     ON CONFLICT (username) DO UPDATE SET
     refresh_token = EXCLUDED.refresh_token,
     expiry_date = EXCLUDED.expiry_date;
@@ -46,7 +45,7 @@ VALUES
 -- ✅ 주문 데이터 추가
 INSERT INTO p_orders (order_id, store_id, user_id, phone, address_id, request, total_price, status, review_id, created_at, updated_at)
 VALUES
-    ('0a6bc8af-fd50-4dad-8265-252fde4b9882', '11111111-1111-1111-1111-111111111111', 1, '010-1111-2222', '55555555-5555-5555-5555-555555555555', '빨리 배달해주세요!', 30000, 'PENDING', null, NOW(), NOW())
+    ('0a6bc8af-fd50-4dad-8265-252fde4b9882', '11111111-1111-1111-1111-111111111111', 1, '010-1111-2222', '55555555-5555-5555-5555-555555555555', '빨리 배달해주세요!', 30000, 'CONFIRMED', null, NOW(), NOW())
 ON CONFLICT (order_id) DO NOTHING;
 
 -- ✅ 주문 아이템 추가

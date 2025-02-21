@@ -1,11 +1,9 @@
 package com.p1.nomnom.food.dto.request;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 @Getter
-@Setter
 @ToString
 public class FoodRequestDto {
     // private Store store;
