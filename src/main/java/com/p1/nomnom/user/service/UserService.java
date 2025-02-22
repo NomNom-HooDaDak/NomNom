@@ -1,6 +1,6 @@
 package com.p1.nomnom.user.service;
 
-import com.p1.nomnom.user.dto.RoleUpdateRequestDto;
+import com.p1.nomnom.user.dto.request.RoleUpdateRequestDto;
 import com.p1.nomnom.user.entity.User;
 import com.p1.nomnom.user.entity.UserRoleEnum;
 import com.p1.nomnom.user.repository.UserRepository;

@@ -2,7 +2,7 @@ package com.p1.nomnom.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.p1.nomnom.security.userdetails.UserDetailsImpl;
-import com.p1.nomnom.user.dto.LoginRequestDto;
+import com.p1.nomnom.user.dto.request.LoginRequestDto;
 import com.p1.nomnom.user.entity.RefreshToken;
 import com.p1.nomnom.user.entity.UserRoleEnum;
 import com.p1.nomnom.user.repository.RefreshTokenRepository;
