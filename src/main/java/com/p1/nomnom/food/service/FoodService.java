@@ -1,5 +1,6 @@
 package com.p1.nomnom.food.service;
 
+import com.p1.nomnom.ai.service.AiService;
 import com.p1.nomnom.food.dto.request.FoodRequestDto;
 import com.p1.nomnom.food.dto.response.FoodResponseDto;
 import com.p1.nomnom.food.entity.Food;
@@ -18,9 +19,9 @@ public class FoodService {
     private final FoodRepository foodRepository;
     private final StoreRepository storeRepository;
 
-
     @Transactional
     public FoodResponseDto createFood(Store store, FoodRequestDto requestDto) {
+
          try {
             Food food = new Food(store, requestDto);
             food.createBy();
