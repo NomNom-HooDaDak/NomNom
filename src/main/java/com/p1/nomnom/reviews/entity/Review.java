@@ -73,7 +73,7 @@ public class Review extends BaseEntity {
         this.content = content;
     }
 
-    public void cancel(String deletedBy) {
+    public void delete(String deletedBy) {
         markAsDeleted(deletedBy);
         this.hidden = true;
     }
