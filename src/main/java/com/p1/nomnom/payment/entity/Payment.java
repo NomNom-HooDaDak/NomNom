@@ -23,14 +23,12 @@ public class Payment extends BaseEntity {
         CARD, CHECK
     }
 
-    //    Method 가 현금인 경우 아예 DONE 처리
-    //    Method 가 카드인 경우 FAIL, SUCCESS 로 처리
     @ToString
-    public enum CurrentStatus{
-        PROGRESS,
+    public enum Status{
         FAIL,
         SUCCESS
     }
+
     // 주문테이블에 주문데이터가 먼저들어오고
     // 주문데이터를 가지고 결제를 진행할 겁니다.
     @Id
@@ -47,26 +45,35 @@ public class Payment extends BaseEntity {
 
     @Column(name="status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private CurrentStatus currentStatus;
+    private Status status;
 
     // 결제 식별 역할, 고유한, 빈 값 허용하지 않음
     @Column(unique = true, nullable = false)
     private UUID paymentKey;
 
     @ManyToOne
-    @JoinColumn(name = "store_id")  // DB에서는 store_id로 매핑
+    @JoinColumn(name = "store_id")
     private Store store;
 
     @OneToOne
     @JoinColumn(name = "order_id", nullable = false, unique = true)
     private Order order;
 
+    private boolean isDeleted = false;
+
     public void createPaymentKey() {
         this.paymentKey = UUID.randomUUID();
     }
 
-    public void createdBy(String username) {
+    @Override
+    public void setCreatedBy(String createdBy) {
         this.createdAt = LocalDateTime.now();
-        this.createdBy = username;
+        this.createdBy = createdBy;
+    }
+
+    @Override
+    public void setDeletedBy(String deletedBy) {
+        this.deletedBy = deletedBy;
+        this.deletedAt = LocalDateTime.now();
     }
 }

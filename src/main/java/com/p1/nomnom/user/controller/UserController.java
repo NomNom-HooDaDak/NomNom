@@ -1,11 +1,14 @@
 package com.p1.nomnom.user.controller;
 
 import com.p1.nomnom.security.jwt.JwtUtil;
-import com.p1.nomnom.user.dto.LoginRequestDto;
-import com.p1.nomnom.user.dto.LoginResponseDto;
-import com.p1.nomnom.user.dto.SignupRequestDto;
-import com.p1.nomnom.user.dto.SignupResponseDto;
+import com.p1.nomnom.user.dto.request.LoginRequestDto;
+import com.p1.nomnom.user.dto.response.LoginResponseDto;
+import com.p1.nomnom.user.dto.request.SignupRequestDto;
+import com.p1.nomnom.user.dto.response.SignupResponseDto;
 import com.p1.nomnom.user.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -19,12 +22,15 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
 @Slf4j
+@Tag(name = "사용자(CUSTOMER) API", description = "사용자 관련 API")
 public class UserController {
 
     private final AuthService authService;
     private final JwtUtil jwtUtil;
 
     // 회원가입 API (ADMIN 코드 포함)
+    @Operation(summary = "회원가입", description = "회원가입 합니다.")
+    @ApiResponse(responseCode = "200", description = "회원가입 성공")
     @PostMapping("/signup")
     public ResponseEntity<SignupResponseDto> signup(@Valid @RequestBody SignupRequestDto requestDto) {
         SignupResponseDto responseDto = authService.signup(requestDto);
@@ -33,6 +39,8 @@ public class UserController {
     }
 
     // 로그인 API (AccessToken & RefreshToken 발급)
+    @Operation(summary = "로그인", description = "로그인 합니다.")
+    @ApiResponse(responseCode = "200", description = "로그인 성공")
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
         log.info("UserController - 로그인 API 호출됨: username={}", requestDto.getUsername());
@@ -58,6 +66,8 @@ public class UserController {
 
 
     // AccessToken 재발급 API
+    @Operation(summary = "Access토큰 재발급", description = "토큰이 만료되어 새로운 토큰 발급")
+    @ApiResponse(responseCode = "200", description = "토큰 재발급 성공")
     @PostMapping("/token/refresh")
     public ResponseEntity<LoginResponseDto> refreshAccessToken(HttpServletRequest request) {
         log.info("AccessToken 재발급 요청");

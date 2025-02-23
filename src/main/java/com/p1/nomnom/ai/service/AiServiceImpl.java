@@ -6,6 +6,7 @@ import com.p1.nomnom.ai.dto.response.AiResponseDto;
 import com.p1.nomnom.ai.entity.Ai;
 import com.p1.nomnom.ai.repository.AiRepository;
 import com.p1.nomnom.ai.utils.AiResponseParser;
+import com.p1.nomnom.security.aop.UserContext;
 import com.p1.nomnom.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,7 +29,7 @@ public class AiServiceImpl implements AiService {
 
     @Transactional
     @Override
-    public AiResponseDto getAiAnswer(AiRequestDto requestDto) {
+    public AiResponseDto getAiAnswer(AiRequestDto requestDto, UserContext userContext) {
         try {
             String modifiedQuestion = requestDto.getQuestion().trim() + " 답변을 최대한 간결하게 50자 이하로";
             String generatedDescription = geminiService.generateContent(
@@ -134,10 +135,10 @@ public class AiServiceImpl implements AiService {
 
     @Transactional
     @Override
-    public AiResponseDto hideAiAnswer(UUID aiId, String deletedBy) {
+    public AiResponseDto hideAiAnswer(UUID aiId, UserContext userContext) {
         Ai ai = aiRepository.findById(aiId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 AI 응답을 찾을 수 없습니다."));
-        ai.hide(deletedBy);
+        ai.hide(userContext.getUsername());
         aiRepository.save(ai);
         return AiResponseDto.builder()
                 .question(ai.getQuestion())
@@ -154,10 +155,10 @@ public class AiServiceImpl implements AiService {
 
     @Transactional
     @Override
-    public AiResponseDto restoreAiAnswer(UUID aiId, String updatedBy) {
+    public AiResponseDto restoreAiAnswer(UUID aiId,UserContext userContext) {
         Ai ai = aiRepository.findById(aiId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 AI 응답을 찾을 수 없습니다."));
-        ai.restore(updatedBy);
+        ai.restore(userContext.getUsername());
         aiRepository.save(ai);
         return AiResponseDto.builder()
                 .question(ai.getQuestion())

@@ -1,35 +1,42 @@
 package com.p1.nomnom.common.util;
 
+import com.p1.nomnom.address.entity.Address;
+import com.p1.nomnom.address.repository.AddressRepository;
 import com.p1.nomnom.security.jwt.JwtUtil;
 import com.p1.nomnom.user.entity.RefreshToken;
 import com.p1.nomnom.user.entity.User;
 import com.p1.nomnom.user.entity.UserRoleEnum;
 import com.p1.nomnom.user.repository.RefreshTokenRepository;
 import com.p1.nomnom.user.repository.UserRepository;
+import com.p1.nomnom.user.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class TestDataRunner implements ApplicationRunner {
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final AddressRepository addressRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final AuthService authService;
 
     @Override
+    @Transactional
     public void run(ApplicationArguments args) {
-        log.info("[TestDataRunner] 테스트 데이터 삽입 시작,,");
+        log.info("[TestDataRunner] 테스트 데이터 삽입 시작...");
 
-        // 1. 테스트 유저 10명 생성
         List<User> users = List.of(
                 new User("testuser1", "test1@email.com", passwordEncoder.encode("Password1!"), "01012345671", UserRoleEnum.CUSTOMER, false),
                 new User("testuser2", "test2@email.com", passwordEncoder.encode("Password2!"), "01012345672", UserRoleEnum.CUSTOMER, false),
@@ -44,22 +51,25 @@ public class TestDataRunner implements ApplicationRunner {
         );
 
         for (User user : users) {
-            User savedUser = userRepository.findByUsername(user.getUsername())
-                    .orElseGet(() -> userRepository.save(user)); // 존재하지 않으면 저장
+            if (!userRepository.existsByUsername(user.getUsername())) {
+                User savedUser = userRepository.save(user);
+                log.info("[TestDataRunner] 유저 생성 완료: username={}, role={}", savedUser.getUsername(), savedUser.getRole());
 
-            // 2. AccessToken & RefreshToken 생성
+            // AccessToken & RefreshToken 생성
             String accessToken = jwtUtil.createAccessToken(savedUser.getUsername(), savedUser.getRole());
             RefreshToken refreshToken = jwtUtil.createRefreshToken(savedUser.getUsername(), savedUser.getRole());
 
-            // 3. RefreshToken 저장 (orElseGet 활용)
             refreshTokenRepository.findByUsername(savedUser.getUsername())
                     .orElseGet(() -> refreshTokenRepository.save(refreshToken));
 
-            log.info("[TestDataRunner] 유저 생성 완료: username={}, role={}", savedUser.getUsername(), savedUser.getRole());
-            log.info("AccessToken: {}", accessToken);
-            log.info("RefreshToken: {}", refreshToken.getRefreshToken());
+                log.info("AccessToken: {}", accessToken);
+                log.info("RefreshToken: {}", refreshToken.getRefreshToken());
+            } else {
+                log.warn("[TestDataRunner] 이미 존재하는 유저: username={}", user.getUsername());
+            }
         }
 
         log.info("[TestDataRunner] 모든 테스트 데이터 삽입 완료!");
     }
+
 }

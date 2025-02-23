@@ -1,6 +1,9 @@
 package com.p1.nomnom.store.controller;
 
+import com.p1.nomnom.security.aop.CurrentUser;
+import com.p1.nomnom.security.aop.CurrentUserInject;
 import com.p1.nomnom.security.aop.RoleCheck;
+import com.p1.nomnom.security.aop.UserContext;
 import com.p1.nomnom.store.dto.request.StoreRequestDTO;
 import com.p1.nomnom.store.dto.response.StoreResponseDTO;
 import com.p1.nomnom.store.service.StoreService;
@@ -29,26 +32,30 @@ public class StoreController {
     // 가게 등록, 가게 주인은 못함
     @RoleCheck({UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @PostMapping
+    @CurrentUserInject
     @Operation(summary = "가게 등록", description = "새로운 가게를 등록합니다. 가게 주인은 등록할 수 없습니다.")
     @ApiResponse(responseCode = "200", description = "가게 등록 성공")
     public ResponseEntity<StoreResponseDTO> createStore(
             @Parameter(description = "등록할 가게 정보")
-            @Valid @RequestBody StoreRequestDTO storeRequestDTO) {
-        StoreResponseDTO storeResponseDTO = storeService.createStore(storeRequestDTO);
+            @Valid @RequestBody StoreRequestDTO storeRequestDTO,
+            @Parameter(hidden = true) @CurrentUser UserContext userContext){
+        StoreResponseDTO storeResponseDTO = storeService.createStore(storeRequestDTO,userContext);
         return ResponseEntity.ok(storeResponseDTO);
     }
 
     // 가게 정보 수정
     @RoleCheck({UserRoleEnum.OWNER, UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @PatchMapping("/{storeId}")
+    @CurrentUserInject
     @Operation(summary = "가게 정보 수정", description = "기존 가게의 정보를 수정합니다.")
     @ApiResponse(responseCode = "200", description = "가게 수정 성공")
     public ResponseEntity<StoreResponseDTO> updateStore(
             @Parameter(description = "수정할 가게의 UUID")
             @PathVariable UUID storeId,
             @Parameter(description = "수정할 가게 정보")
-            @Valid @RequestBody StoreRequestDTO storeRequestDTO) {
-        StoreResponseDTO storeResponseDTO = storeService.updateStore(storeId, storeRequestDTO);
+            @Valid @RequestBody StoreRequestDTO storeRequestDTO,
+            @Parameter(hidden = true) @CurrentUser UserContext userContext) {
+        StoreResponseDTO storeResponseDTO = storeService.updateStore(storeId, storeRequestDTO, userContext);
         return ResponseEntity.ok(storeResponseDTO);
     }
 
@@ -110,24 +117,28 @@ public class StoreController {
     // 가게 숨김 처리
     @RoleCheck({UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @PatchMapping("/{storeId}/hide")
+    @CurrentUserInject
     @Operation(summary = "가게 숨김 처리", description = "가게를 숨깁니다.")
     @ApiResponse(responseCode = "200", description = "가게 숨김 처리 성공")
     public ResponseEntity<StoreResponseDTO> hideStore(
             @Parameter(description = "숨길 가게의 UUID")
-            @PathVariable UUID storeId) {
-        StoreResponseDTO storeResponseDTO = storeService.hideStore(storeId);
+            @PathVariable UUID storeId,
+            @Parameter(hidden = true) @CurrentUser UserContext userContext) {
+        StoreResponseDTO storeResponseDTO = storeService.hideStore(storeId, userContext);
         return ResponseEntity.ok(storeResponseDTO);
     }
 
     //가게 복구
     @RoleCheck({UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @PatchMapping("/{storeId}/restore")
+    @CurrentUserInject
     @Operation(summary = "가게 복구", description = "숨겨진 가게를 복구합니다.")
     @ApiResponse(responseCode = "200", description = "가게 복구 성공")
     public ResponseEntity<StoreResponseDTO> restoreStore(
             @Parameter(description = "복구할 가게의 UUID")
-            @PathVariable UUID storeId) {
-        StoreResponseDTO storeResponseDTO = storeService.restoreStore(storeId);
+            @PathVariable UUID storeId,
+            @Parameter(hidden = true) @CurrentUser UserContext userContext) {
+        StoreResponseDTO storeResponseDTO = storeService.restoreStore(storeId, userContext);
         return ResponseEntity.ok(storeResponseDTO);
     }
 }
