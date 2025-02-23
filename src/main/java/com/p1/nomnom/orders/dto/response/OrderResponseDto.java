@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 public class OrderResponseDto {
     private UUID id;
     private UUID storeId;
+    private String storeName;
     private String userName;
     private UUID addressId;
     private String phone;
@@ -39,12 +40,13 @@ public class OrderResponseDto {
     private String updatedBy;
     protected LocalDateTime deletedAt;
     protected String deletedBy;
-    private List<OrderItemDto> orderItems; // ✅ 내부 클래스 사용
+    private List<OrderItemDto> orderItems;
 
     public static OrderResponseDto from(Order order) {
         return new OrderResponseDto(
                 order.getId(),
                 order.getStoreId(),
+                order.getStoreName(),
                 order.getUser().getUsername(),
                 order.getAddressId(),
                 order.getPhone(),
