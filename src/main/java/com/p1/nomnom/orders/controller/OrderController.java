@@ -1,5 +1,7 @@
 package com.p1.nomnom.orders.controller;
 
+import com.p1.nomnom.orders.dto.request.OrderSearchRequestDto;
+import com.p1.nomnom.orders.dto.response.OrderListResponseDto;
 import com.p1.nomnom.security.aop.CurrentUser;
 import com.p1.nomnom.security.aop.CurrentUserInject;
 import com.p1.nomnom.security.aop.UserContext;
@@ -61,14 +63,14 @@ public class OrderController {
     @RoleCheck({UserRoleEnum.CUSTOMER, UserRoleEnum.OWNER, UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     @GetMapping
     @CurrentUserInject
-    public Page<OrderResponseDto> getOrders(
+    public OrderListResponseDto getOrders(
             @CurrentUser @Parameter(hidden = true) UserContext userContext,
-            Pageable pageable
+            @ModelAttribute OrderSearchRequestDto searchRequest
     ) {
-        return orderService.getOrders(userContext, pageable);
+        return orderService.getOrders(userContext, searchRequest);
     }
 
-    @PatchMapping("/{orderId}")
+    @PatchMapping("/{orderId}/cancel")
     @CurrentUserInject
     @Operation(summary = "주문 취소", description = "주문을 취소합니다.")
     @ApiResponse(responseCode = "200", description = "주문 취소 성공")
@@ -78,6 +80,19 @@ public class OrderController {
             @CurrentUser @Parameter(hidden = true) UserContext userContext
     ) {
         orderService.cancelOrder(orderId, userContext);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{orderId}/delete")
+    @CurrentUserInject
+    @Operation(summary = "주문 삭제", description = "주문을 숨김 처리(soft delete)합니다.")
+    @ApiResponse(responseCode = "200", description = "주문 삭제 성공")
+    @RoleCheck({UserRoleEnum.CUSTOMER, UserRoleEnum.OWNER, UserRoleEnum.MASTER, UserRoleEnum.MANAGER})
+    public ResponseEntity<Void> deleteOrder(
+            @PathVariable UUID orderId,
+            @CurrentUser @Parameter(hidden = true) UserContext userContext
+    ) {
+        orderService.deleteOrder(orderId, userContext);
         return ResponseEntity.ok().build();
     }
 }

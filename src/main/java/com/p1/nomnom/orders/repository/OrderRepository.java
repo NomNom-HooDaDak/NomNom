@@ -7,11 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface OrderRepository extends JpaRepository<Order, UUID> {
-    Page<Order> findByUserIdOrderByCreatedAtDesc(UUID userId, Pageable pageable);
-
-    Page<Order> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
-
-    Page<Order> findByStoreIdOrderByCreatedAtDesc(Long storeId, Pageable pageable);
-
+public interface OrderRepository extends JpaRepository<Order, UUID>, OrderRepositoryCustom {
 }

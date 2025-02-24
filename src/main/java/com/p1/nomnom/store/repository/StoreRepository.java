@@ -6,6 +6,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -32,6 +34,8 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
     // feature_ai 추가부분 - 기본 제공이라 제거 가능
     Optional<Store> findById(UUID storeId);
 
+    @Query("SELECT s.name FROM Store s WHERE s.id = :storeId")
+    Optional<String> findStoreNameById(@Param("storeId") UUID storeId);
 
-
+    boolean existsByIdAndUserId(UUID storeId, Long userId);
 }

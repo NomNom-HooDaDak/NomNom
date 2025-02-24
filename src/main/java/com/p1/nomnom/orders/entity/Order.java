@@ -6,6 +6,7 @@ import com.p1.nomnom.payment.entity.Payment;
 import com.p1.nomnom.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.ArrayList;
@@ -27,6 +28,9 @@ public class Order extends BaseEntity {
     @Column(name = "store_id", nullable = false)
     private UUID storeId;
 
+    @Column(name = "store_name", nullable = false)
+    private String storeName;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -38,7 +42,7 @@ public class Order extends BaseEntity {
     private UUID addressId;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @Column(nullable = false)
+    @BatchSize(size = 10)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @Column(columnDefinition = "TEXT")
@@ -57,10 +61,13 @@ public class Order extends BaseEntity {
     @Column(name = "review_id")
     private UUID reviewId;
 
-    public static Order create( UUID storeId, User user, String phone, UUID addressId, String request) {
+    private boolean hidden;
+
+    public static Order create( UUID storeId, String storeName, User user, String phone, UUID addressId, String request) {
         return new Order(
                 null,
                 storeId,
+                storeName,
                 user,
                 phone,
                 addressId,
@@ -69,7 +76,8 @@ public class Order extends BaseEntity {
                 null,
                 null,
                 Status.PENDING,
-                null
+                null,
+                false
         );
     }
 
@@ -78,9 +86,13 @@ public class Order extends BaseEntity {
         this.totalPrice = totalPrice;
     }
 
-    public void cancel(String deletedBy) {
-        markAsDeleted(deletedBy);
+    public void cancel() {
         this.status = Status.CANCELED;
+    }
+
+    public void delete(String deletedBy) {
+        this.hidden = true;
+        markAsDeleted(deletedBy);
     }
 }
 

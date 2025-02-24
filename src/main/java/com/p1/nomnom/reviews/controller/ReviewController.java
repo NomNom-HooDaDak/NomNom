@@ -1,5 +1,7 @@
 package com.p1.nomnom.reviews.controller;
 
+import com.p1.nomnom.reviews.dto.request.ReviewSearchRequestDto;
+import com.p1.nomnom.reviews.dto.response.ReviewListResponseDto;
 import com.p1.nomnom.security.aop.CurrentUser;
 import com.p1.nomnom.security.aop.CurrentUserInject;
 import com.p1.nomnom.security.aop.UserContext;
@@ -58,12 +60,10 @@ public class ReviewController {
     @Operation(summary = "리뷰 리스트 조회", description = "특정 스토어의 리뷰 목록을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "리뷰 리스트 조회 성공")
     @RoleCheck({UserRoleEnum.CUSTOMER, UserRoleEnum.OWNER, UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
-    public Page<ReviewResponseDto> getReviews(
-            @Parameter(description = "스토어 ID", required = true) @RequestParam UUID storeId,
-            Pageable pageable,
-            @CurrentUser @Parameter(hidden = true) UserContext userContext
+    public ReviewListResponseDto getReviews(
+            @ModelAttribute ReviewSearchRequestDto searchRequest
     ) {
-        return reviewService.getReviews(storeId, pageable, userContext);
+        return reviewService.getReviews(searchRequest);
     }
 
     @GetMapping("/{reviewId}")
@@ -72,10 +72,9 @@ public class ReviewController {
     @ApiResponse(responseCode = "200", description = "리뷰 조회 성공")
     @RoleCheck({UserRoleEnum.CUSTOMER, UserRoleEnum.OWNER, UserRoleEnum.MANAGER, UserRoleEnum.MASTER})
     public ReviewResponseDto getReview(
-            @Parameter(description = "스토어 ID", required = true) @PathVariable UUID reviewId,
-            @CurrentUser @Parameter(hidden = true) UserContext userContext
+            @Parameter(description = "스토어 ID", required = true) @PathVariable UUID reviewId
     ) {
-        return reviewService.getReview(reviewId, userContext);
+        return reviewService.getReview(reviewId);
     }
 
     @PatchMapping("/{reviewId}")

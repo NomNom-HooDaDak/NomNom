@@ -29,30 +29,31 @@ dependencies {
     implementation 'com.aventrix.jnanoid:jnanoid:2.0.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+
     // JWT 관련 라이브러리 (jjwt 최신 설정)
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     implementation 'io.jsonwebtoken:jjwt-impl:0.12.6'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.6'
-    // 유효성 검사 의존성 추가
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     // ai - google gemini
     implementation 'com.google.auth:google-auth-library-oauth2-http:1.18.0'
-
     implementation 'com.google.cloud:google-cloud-language:2.6.0'
     implementation 'com.google.protobuf:protobuf-java:4.28.2'
 
-    //JSON으로 가져온 데이터 정리
-    //swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
-
-    //JSON으로 가져온 데이터 정리 parsing
+    // JSON으로 가져온 데이터 정리 parsing
     implementation 'org.json:json:20210307'
 
     // Spring Boot Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
     // 스웨거
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0'
+
+    // 쿼리 DSL
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
@@ -60,11 +61,30 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
+// QueryDSL 설정부
+def generated = "$buildDir/generated/querydsl"
+
+sourceSets {
+    main {
+        java {
+            srcDirs += generated
+        }
+    }
+}
+
+// QueryDSL QClass 파일 생성 위치를 지정
+tasks.withType(JavaCompile) {
+    options.annotationProcessorGeneratedSourcesDirectory = file(generated)
+}
+
+// gradle clean 시에 QClass 디렉토리 삭제
+clean {
+    delete file(generated)
+}
 
 tasks.named('test') {
     useJUnitPlatform()

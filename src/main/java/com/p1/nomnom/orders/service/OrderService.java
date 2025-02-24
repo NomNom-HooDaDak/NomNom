@@ -1,19 +1,20 @@
 package com.p1.nomnom.orders.service;
 
+import com.p1.nomnom.orders.dto.request.OrderSearchRequestDto;
+import com.p1.nomnom.orders.dto.response.OrderListResponseDto;
 import com.p1.nomnom.orders.entity.Status;
+import com.p1.nomnom.orders.util.AuthorizationUtil;
 import com.p1.nomnom.security.aop.UserContext;
-import com.p1.nomnom.user.entity.UserRoleEnum;
+import com.p1.nomnom.store.repository.StoreRepository;
 import com.p1.nomnom.orderItems.entity.OrderItem;
 import com.p1.nomnom.orderItems.service.OrderItemService;
 import com.p1.nomnom.orders.dto.request.OrderRequestDto;
 import com.p1.nomnom.orders.dto.response.OrderResponseDto;
 import com.p1.nomnom.orders.entity.Order;
 import com.p1.nomnom.orders.repository.OrderRepository;
-import com.p1.nomnom.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,13 +27,17 @@ import java.util.UUID;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemService orderItemService;
-    private final UserRepository userRepository;
+    private final StoreRepository storeRepository;
 
     // 주문 등록
     @Transactional
     public OrderResponseDto createOrder(UserContext userContext, OrderRequestDto orderRequestDto) {
+        String storeName = storeRepository.findStoreNameById(orderRequestDto.getStoreId())
+                .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다."));
+
         Order order = Order.create(
                 orderRequestDto.getStoreId(),
+                storeName,
                 userContext.getUser(),
                 orderRequestDto.getPhone(),
                 orderRequestDto.getAddressId(),
@@ -40,12 +45,10 @@ public class OrderService {
         );
         Order savedOrder = orderRepository.save(order);
 
-        List<OrderItem> orderItems = orderItemService.createOrderItems(savedOrder, orderRequestDto.getOrderItems());
-
+        List<OrderItem> orderItems = orderItemService.createOrderItems(order, orderRequestDto.getOrderItems());
         Long totalPrice = orderItems.stream()
                 .mapToLong(item -> item.getPrice() * item.getQuantity())
                 .sum();
-
         savedOrder.updateOrderItemsAndTotalPrice(orderItems, totalPrice);
 
         orderRepository.save(savedOrder);
@@ -57,33 +60,15 @@ public class OrderService {
     public OrderResponseDto getOrder(UUID orderId, UserContext userContext) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
-
-        if (userContext.getRole() == UserRoleEnum.CUSTOMER && !order.getUser().getId().equals(userContext.getUserId())) {
-            throw new IllegalArgumentException("본인이 주문한 것만 조회할 수 있습니다.");
-        }
-
-        if (userContext.getRole() == UserRoleEnum.OWNER && !order.getStoreId().equals(userContext.getUserId())) {
-            throw new IllegalArgumentException("가게 주인은 해당 가게의 주문만 조회할 수 있습니다.");
-        }
-
+        AuthorizationUtil.validateOrderPermission(userContext, order, order.getStoreId(), storeRepository);
         return OrderResponseDto.from(order);
     }
 
     // ✅ 주문 리스트 조회
     @Transactional(readOnly = true)
-    public Page<OrderResponseDto> getOrders(UserContext userContext, Pageable pageable) {
-        if (userContext.getRole() == UserRoleEnum.MASTER || userContext.getRole() == UserRoleEnum.MANAGER) {
-            return orderRepository.findAll(pageable).map(OrderResponseDto::from);
-        }
-
-        if (userContext.getRole() == UserRoleEnum.OWNER) {
-            return orderRepository.findByStoreIdOrderByCreatedAtDesc(userContext.getUserId(), pageable)
-                    .map(OrderResponseDto::from);
-        }
-
-        // CUSTOMER는 자신이 주문한 것만 조회
-        return orderRepository.findByUserIdOrderByCreatedAtDesc(userContext.getUserId(), pageable)
-                .map(OrderResponseDto::from);
+    public OrderListResponseDto getOrders(UserContext userContext, OrderSearchRequestDto searchRequest) {
+        Page<Order> ordersPage = orderRepository.searchOrders(userContext, searchRequest);
+        return OrderListResponseDto.from(ordersPage);
     }
 
     // ✅ 주문 취소
@@ -91,21 +76,18 @@ public class OrderService {
     public void cancelOrder(UUID orderId, UserContext userContext) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
+        AuthorizationUtil.validateOrderPermission(userContext, order, order.getStoreId(), storeRepository);
+        order.cancel();
+        orderRepository.save(order);
+    }
 
-        if (userContext.getRole() == UserRoleEnum.CUSTOMER) {
-            if (!order.getUser().getId().equals(userContext.getUserId())) {
-                throw new IllegalArgumentException("본인이 주문한 것만 취소할 수 있습니다.");
-            }
-        }
-
-        if (userContext.getRole() == UserRoleEnum.OWNER) {
-            if (!order.getStoreId().equals(userContext.getUserId())) {
-                throw new IllegalArgumentException("가게 주인은 본인 가게의 주문만 취소할 수 있습니다.");
-            }
-        }
-
-        order.cancel(userContext.getUsername());
-
+    // ✅ 주문 삭제 (숨김 처리)
+    @Transactional
+    public void deleteOrder(UUID orderId, UserContext userContext) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
+        AuthorizationUtil.validateOrderPermission(userContext, order, order.getStoreId(), storeRepository);
+        order.delete(userContext.getUsername());
         orderRepository.save(order);
     }
 
