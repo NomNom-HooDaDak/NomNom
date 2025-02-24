@@ -9,6 +9,7 @@ import com.p1.nomnom.ai.utils.AiResponseParser;
 import com.p1.nomnom.security.aop.UserContext;
 import com.p1.nomnom.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,10 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AiServiceImpl implements AiService {
 
     private final AiRepository aiRepository;
@@ -171,5 +174,18 @@ public class AiServiceImpl implements AiService {
                 .answer(ai.getAnswer())
                 .hidden(ai.getHidden() != null ? ai.getHidden() : Boolean.FALSE) // null 방지
                 .build();
+    }
+
+    // 특정 가게가 foodName 기반으로 ai 서비스를 이용한 답변 여부 확인,
+    // ai 서비스를 이용한 답변이 존재한다면 가장 최신의 답변만 반환한다.
+    @Override
+    public String findFirstAnswerByStoreAndFoodName(UUID storeId, String foodName) {
+        Ai firstAnswerByStoreAndFoodName = aiRepository.findFirstAnswerByStoreAndFoodName(storeId, foodName);
+        // log.info("ai 서비스 이용 안했을 때 어떤 데이터가 반환될까: {}", firstAnswerByStoreAndFoodName); null 이 반환됨.
+
+        if(firstAnswerByStoreAndFoodName != null) {
+            log.info("AnswerByStoreAndFoodName: {}, {}", firstAnswerByStoreAndFoodName.getAnswer(), firstAnswerByStoreAndFoodName.getFoodName());
+            return firstAnswerByStoreAndFoodName.getAnswer();
+        }   return 1+"";
     }
 }

@@ -22,6 +22,8 @@ public interface AiService {
     AiResponseDto hideAiAnswer(UUID aiId, UserContext userContext);
     AiResponseDto restoreAiAnswer(UUID aiId, UserContext userContext);
 
+    String findFirstAnswerByStoreAndFoodName(UUID storeId, String foodName);
+
 
 
 }
