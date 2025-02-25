@@ -30,7 +30,7 @@
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/SpringBoot.png?raw=true" width="80">
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/SpringSecurity.png?raw=true" width="80">
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/SpringDataJPA.png?raw=true" width="80">
-<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Postman.png.png?raw=true" width="80">
+<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Postman.png?raw=true" width="80">
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Swagger.png?raw=true" width="80">
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Querydsl.png?raw=true" width="80">
 Gradle, PostgreSQL
@@ -71,5 +71,6 @@ Gradle, PostgreSQL
 ## 💁‍♂️ 프로젝트 팀원
 |Backend|Frontend|
 |:---:|:---:|
-| ![](https://github.com/yewon-Noh.png?size=120) | ![](https://github.com/SeongHo-C.png?size=120) |
-|[노예원](https://github.com/yewon-Noh)|[이성호](https://github.com/SeongHo-C)|
+| ![](https://github.com/kwon2501.png?size=120) | ![](https://github.com/SeongHo-C.png?size=120) |
+|[이성민]()|[임소라](https://github.com/luz315)|
+|[권규린](https://github.com/kwon2501)|[박성주](https://github.com/goodperiodt)|
