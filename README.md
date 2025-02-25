@@ -69,8 +69,11 @@ Gradle, PostgreSQL
 <br />
 
 ## 💁‍♂️ 프로젝트 팀원
-|Backend|Frontend|
+|Backend|Backend|
 |:---:|:---:|
-| ![](https://github.com/kwon2501.png?size=120) | ![](https://github.com/SeongHo-C.png?size=120) |
-|[이성민]()|[임소라](https://github.com/luz315)|
+| ![](https://github.com/luz315.png?size=40) | ![](https://github.com/luz315.png?size=40) |
+|[이성민](https://github.com/luz315)|[임소라](https://github.com/luz315)|
+|Backend|Backend|
+|:---:|:---:|
+| ![](https://github.com/kwon2501.png?size=40) | ![](https://github.com/goodperiodt.png?size=40) |
 |[권규린](https://github.com/kwon2501)|[박성주](https://github.com/goodperiodt)|
