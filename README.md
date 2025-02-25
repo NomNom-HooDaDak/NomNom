@@ -77,6 +77,6 @@
 
 | 이성민 | 임소라 | 권규린 | 박성주 |
 |:---:|:---:|:---:|:---:|
-| <img src="https://github.com/goodperiodt.png" width="100" height="100"/> | <img src="https://github.com/kwon2501.png" width="100" height="100"/> | <img src="https://github.com/2sminn.png" width="100" height="100"/> | <img src="https://github.com/luz315.png" width="100" height="100"/> |
+| <img src="https://github.com/2sminn.png" width="100" height="100"/> | <img src="https://github.com/luz315.png" width="100" height="100"/> | <img src="https://github.com/kwon2501.png" width="100" height="100"/> | <img src="https://github.com/goodperiodt.png" width="100" height="100"/> |
 | [이성민](https://github.com/2sminn) | [임소라](https://github.com/luz315) | [권규린](https://github.com/kwon2501) | [박성주](https://github.com/goodperiodt) |
 | ![GitHub Badge](http://img.shields.io/badge/2sminn-green?style=social&logo=github) | ![GitHub Badge](http://img.shields.io/badge/luz315-green?style=social&logo=github) | ![GitHub Badge](http://img.shields.io/badge/kwon2501-green?style=social&logo=github) | ![GitHub Badge](http://img.shields.io/badge/goodperiodt-green?style=social&logo=github) |
