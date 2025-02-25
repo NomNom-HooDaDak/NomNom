@@ -30,8 +30,8 @@
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Postman.png?raw=true" width="80">
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Swagger.png?raw=true" width="80">
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Qeurydsl.png?raw=true" width="80">
-<img src="https://github.com/user-attachments/assets/c8013298-1652-4362-951f-ad1c84dcd017?raw=true" width="80">
-<img src="https://github.com/user-attachments/assets/c8013298-1652-4362-951f-ad1c84dcd017?raw=true" width="80">
+<img src="https://github.com/user-attachments/assets/6c630aac-1510-444f-ad99-2be2185d1d32?raw=true" width="80">
+<img src="https://github.com/user-attachments/assets/10b299a0-920d-4fdd-beb5-3434968b44fc?raw=true" width="80">
 Gradle, PostgreSQL
 
     
