@@ -10,7 +10,7 @@
 </div> 
 
 ## 📝 소개
-- 프로젝트 소개: Nomnom은 냠냠이라는 영어식 표현입니다. 배달의 민족 음식점들의 배달, 결제, 주문 내역 관리 기능을 모티브로 진행했습니다
+- 프로젝트 소개
 - 사용한 기술 스택
 - 프로젝트 아키텍쳐
 - Deployment Url
@@ -18,7 +18,10 @@
 - 프로젝트 팀원
 
 <br />
+## ⚙ 프로젝트 소개
+- Nomnom은 냠냠이라는 영어식 표현입니다. 배달의 민족 음식점들의 배달, 결제, 주문 내역 관리 기능을 모티브로 진행했습니다
 
+<br />
 ## ⚙ 기술 스택
 ### Back-end
 
@@ -67,8 +70,8 @@
 
 ## 💁‍♂️ 프로젝트 팀원
 
-| 박성주 | 권규린 | 이성민 | 임소라 |
+| 이성민 | 임소라 | 권규린 | 박성주 |
 |:---:|:---:|:---:|:---:|
 | <img src="https://github.com/goodperiodt.png" width="100" height="100"/> | <img src="https://github.com/kwon2501.png" width="100" height="100"/> | <img src="https://github.com/2sminn.png" width="100" height="100"/> | <img src="https://github.com/luz315.png" width="100" height="100"/> |
-| [박성주](https://github.com/goodperiodt) | [권규린](https://github.com/kwon2501) | [이성민](https://github.com/2sminn) | [임소라](https://github.com/luz315) |
-| ![GitHub Badge](http://img.shields.io/badge/goodperiodt-green?style=social&logo=github) | ![GitHub Badge](http://img.shields.io/badge/kwon2501-green?style=social&logo=github) | ![GitHub Badge](http://img.shields.io/badge/2sminn-green?style=social&logo=github) | ![GitHub Badge](http://img.shields.io/badge/luz315-green?style=social&logo=github) |
+| [이성민](https://github.com/2sminn) | [임소라](https://github.com/luz315) | [권규린](https://github.com/kwon2501) | [박성주](https://github.com/goodperiodt) |
+| ![GitHub Badge](http://img.shields.io/badge/2sminn-green?style=social&logo=github) | ![GitHub Badge](http://img.shields.io/badge/luz315-green?style=social&logo=github) | ![GitHub Badge](http://img.shields.io/badge/kwon2501-green?style=social&logo=github) | ![GitHub Badge](http://img.shields.io/badge/goodperiodt-green?style=social&logo=github) |
