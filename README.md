@@ -25,15 +25,17 @@
 > skills 폴더에 있는 아이콘을 이용할 수 있습니다.
 ### Back-end
 
-
 <div>
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Java.png?raw=true" width="80">
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/SpringBoot.png?raw=true" width="80">
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/SpringSecurity.png?raw=true" width="80">
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/SpringDataJPA.png?raw=true" width="80">
-<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Mysql.png?raw=true" width="80">
-<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Ajax.png?raw=true" width="80">
-<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Thymeleaf.png?raw=true" width="80">
+<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Postman.png.png?raw=true" width="80">
+<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Swagger.png?raw=true" width="80">
+<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Querydsl.png?raw=true" width="80">
+Gradle, PostgreSQL
+
+    
 </div>
 
 ### Infra
@@ -50,21 +52,19 @@
 <br />
 
 ## 🛠️ 프로젝트 아키텍쳐
-![no-image](https://user-images.githubusercontent.com/80824750/208294567-738dd273-e137-4bbf-8307-aff64258fe03.png)
-
-
+![image](https://github.com/user-attachments/assets/3abf7f0a-68b2-48f6-ba98-c70739ddabc7)
 
 <br />
 
-## 🤔 기술적 이슈와 해결 과정
-- Stream 써야할까?
-    - [Stream API에 대하여](https://velog.io/@yewo2nn16/Java-Stream-API)
-- Gmail STMP 이용하여 이메일 전송하기
-    - [gmail 보내기](https://velog.io/@yewo2nn16/Email-이메일-전송하기with-첨부파일)
-- AWS EC2에 배포하기
-    - [서버 배포하기-1](https://velog.io/@yewo2nn16/SpringBoot-서버-배포)
-    - [서버 배포하기-2](https://velog.io/@yewo2nn16/SpringBoot-서버-배포-인텔리제이에서-jar-파일-빌드해서-배포하기)
+## Deployment Url
+- Deployment url
+    - [배포 주소](http://54.180.153.92:8080/doc)
 
+<br />
+
+## 🤔 Team Notion Url
+- NomNom Team Notion
+    - [NomNom Team Notion](https://teamsparta.notion.site/5-NomNom-1972dc3ef51480adad72caeed3720f85)
 
 <br />
 
