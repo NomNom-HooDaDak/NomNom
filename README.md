@@ -32,8 +32,6 @@
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Qeurydsl.png?raw=true" width="80">
 <img src="https://github.com/user-attachments/assets/6c630aac-1510-444f-ad99-2be2185d1d32?raw=true" width="80">
 <img src="https://github.com/user-attachments/assets/10b299a0-920d-4fdd-beb5-3434968b44fc?raw=true" width="80">
-Gradle, PostgreSQL
-
     
 </div>
 
@@ -68,10 +66,7 @@ Gradle, PostgreSQL
 <br />
 
 ## 💁‍♂️ 프로젝트 팀원
-|Backend|Backend|
-|:---:|:---:|
-| ![](https://github.com/2sminn.png?size=200) | ![](https://github.com/luz315.png?size=200) |
-|[이성민](https://github.com/2sminn)|[임소라](https://github.com/luz315)|
-|Backend|Backend|
-| ![](https://github.com/kwon2501.png) | ![](https://github.com/goodperiodt.png) |
-|[권규린](https://github.com/kwon2501)|[박성주](https://github.com/goodperiodt)|
+|Backend|Backend|Backend|Backend|
+|:---:|:---:|:---:|:---:|
+| ![](https://github.com/2sminn.png?size=200) | ![](https://github.com/luz315.png?size=200) |![](https://github.com/kwon2501.png) | ![](https://github.com/goodperiodt.png) |
+|[이성민](https://github.com/2sminn)|[임소라](https://github.com/luz315)|[권규린](https://github.com/kwon2501)|[박성주](https://github.com/goodperiodt)|
