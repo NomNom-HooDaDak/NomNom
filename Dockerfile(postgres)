@@ -1,0 +1,10 @@
+# PostgreSQL 공식 이미지 사용
+FROM postgres:17
+
+# 환경변수 설정 (Docker Compose에서 설정됨)
+ENV POSTGRES_DB=mytestdb
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=abcde12345
+
+# 데이터베이스 초기화 SQL 파일 복사 (옵션)
+COPY init.sql /docker-entrypoint-initdb.d/
